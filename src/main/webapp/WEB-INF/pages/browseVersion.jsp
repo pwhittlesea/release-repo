@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <%
+      String famUrl = request.getContextPath() + "/browse/" + request.getAttribute("family");
+      String prodUrl = famUrl + "/" + request.getAttribute("product");
+    %>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,18 +41,58 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="<%=request.getContextPath()%>/browse">Browse</a></li>
+            <li><a href="<%=request.getContextPath()%>/">Home</a></li>
+            <li class="active"><a href="<%=request.getContextPath()%>/browse">Browse</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
     <div class="container">
+      <ol class="breadcrumb">
+        <li><a href="<%=request.getContextPath()%>/browse"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a href="<%=famUrl%>"><%=request.getAttribute("family")%></a></li>
+        <li><a href="<%=prodUrl%>"><%=request.getAttribute("product")%></a></li>
+        <li class="active"><%=request.getAttribute("version")%></li>
+      </ol>
 
-      <div class="main-page text-center">
-        <h1>Welcome to the <%=request.getAttribute("company")%><br>Product Repository</h1>
-        <p class="lead">Use the navigation provided above to view/edit or add to the server.</p>
+      <div class="main-page">
+        <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-8">
+            <div class="table-responsive">
+                <table id="bs-table" class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th class="col-lg-8 text-left">Name</th>
+                      <th class="col-lg-2 text-right">Size</th>
+                      <th class="col-lg-2 text-right">Modified</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <td colspan="3">
+                        <small class="pull-left text-muted">1 folder and 24 files, 5.53 KB in total</small>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                    <tr>
+                      <td data-sort-value="archive.7z">
+                        <span class="glyphicon glyphicon-file"></span>
+                        <a href="archive.7z">archive.7z</a>
+                      </td>
+                      <td class="text-right">14 bytes</td>
+                      <td class="text-right">10 months ago</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+          </div>
+        </div>
       </div>
 
     </div><!-- /.container -->

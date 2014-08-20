@@ -37,18 +37,38 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="<%=request.getContextPath()%>/browse">Browse</a></li>
+            <li><a href="<%=request.getContextPath()%>/">Home</a></li>
+            <li class="active"><a href="#">Browse</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
     <div class="container">
+      <ol class="breadcrumb">
+        <li class="active"><span class="glyphicon glyphicon-home"></span></li>
+      </ol>
 
-      <div class="main-page text-center">
-        <h1>Welcome to the <%=request.getAttribute("company")%><br>Product Repository</h1>
-        <p class="lead">Use the navigation provided above to view/edit or add to the server.</p>
+      <div class="main-page">
+        <div class="row">
+          <div class="col-md-2">
+          </div>
+          <div class="col-md-8">
+            <p class="text-center lead">Select the product family</p>
+              <div class="row">
+                <div class="col-md-6">
+                  <a href="<%=request.getContextPath()%>/browse/family1" class="btn btn-primary btn-lg btn-block">Product Family 1</a>
+                  <a href="<%=request.getContextPath()%>/browse/family2" class="btn btn-primary btn-lg btn-block">Product Family 2</a>
+                </div>
+                <div class="col-md-6">
+                  <a href="<%=request.getContextPath()%>/browse/family3" class="btn btn-primary btn-lg btn-block">Product Family 3</a>
+                  <a href="<%=request.getContextPath()%>/browse/family4" class="btn btn-primary btn-lg btn-block">Product Family 4</a>
+                </div>
+              </div>
+          </div>
+          <div class="col-md-2">
+          </div>
+        </div>
       </div>
 
     </div><!-- /.container -->
