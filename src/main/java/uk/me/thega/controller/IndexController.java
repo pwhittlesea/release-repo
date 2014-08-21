@@ -11,8 +11,7 @@ public class IndexController extends AbstractController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String indexGet(final ModelMap model) {
-		controllerGet(model);
-		model.addAttribute("company", "Company Name");
+		populateGet(model);
 		// Spring uses InternalResourceViewResolver and return back index.jsp
 		return "index";
 	}

@@ -4,7 +4,8 @@ import org.springframework.ui.ModelMap;
 
 public class AbstractController {
 
-	protected void controllerGet(final ModelMap model) {
+	protected void populateGet(final ModelMap model) {
 		model.addAttribute("productName", "Product Name");
+		model.addAttribute("company", "Company Name");
 	}
 }

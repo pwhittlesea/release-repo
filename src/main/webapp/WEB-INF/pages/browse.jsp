@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <%
+      String[] oddList = (String[]) request.getAttribute("oddList");
+      String[] evenList = (String[]) request.getAttribute("evenList");
+    %>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,12 +61,14 @@
             <p class="text-center lead">Select the product family</p>
               <div class="row">
                 <div class="col-md-6">
-                  <a href="<%=request.getContextPath()%>/browse/family1" class="btn btn-primary btn-lg btn-block">Product Family 1</a>
-                  <a href="<%=request.getContextPath()%>/browse/family2" class="btn btn-primary btn-lg btn-block">Product Family 2</a>
+                  <% for(int i = 0; i < oddList.length; i+=1) { %>
+                    <a href="<%=request.getContextPath()%>/browse/<%=oddList[i]%>.html" class="btn btn-primary btn-lg btn-block"><%=oddList[i]%></a>
+                  <% } %>
                 </div>
                 <div class="col-md-6">
-                  <a href="<%=request.getContextPath()%>/browse/family3" class="btn btn-primary btn-lg btn-block">Product Family 3</a>
-                  <a href="<%=request.getContextPath()%>/browse/family4" class="btn btn-primary btn-lg btn-block">Product Family 4</a>
+                  <% for(int i = 0; i < evenList.length; i+=1) { %>
+                    <a href="<%=request.getContextPath()%>/browse/<%=evenList[i]%>.html" class="btn btn-primary btn-lg btn-block"><%=evenList[i]%></a>
+                  <% } %>
                 </div>
               </div>
           </div>

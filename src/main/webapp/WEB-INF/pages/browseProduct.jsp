@@ -4,6 +4,7 @@
     <%
       String famUrl = request.getContextPath() + "/browse/" + request.getAttribute("family");
       String prodUrl = famUrl + "/" + request.getAttribute("product");
+      String[] list = (String[]) request.getAttribute("list");
     %>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -51,7 +52,7 @@
     <div class="container">
       <ol class="breadcrumb">
         <li><a href="<%=request.getContextPath()%>/browse"><span class="glyphicon glyphicon-home"></span></a></li>
-        <li><a href="<%=famUrl%>"><%=request.getAttribute("family")%></a></li>
+        <li><a href="<%=famUrl%>.html"><%=request.getAttribute("family")%></a></li>
         <li class="active"><%=request.getAttribute("product")%></li>
       </ol>
 
@@ -61,8 +62,9 @@
           </div>
           <div class="col-md-8">
             <p class="text-center lead">Select the version</p>
-            <a href="<%=prodUrl%>/version1" class="btn btn-primary btn-lg btn-block">Version 1</a>
-            <a href="<%=prodUrl%>/version2" class="btn btn-primary btn-lg btn-block">Version 2</a>
+            <% for(int i = 0; i < list.length; i+=1) { %>
+              <a href="<%=prodUrl%>/<%=list[i]%>.html" class="btn btn-primary btn-lg btn-block"><%=list[i]%></a>
+            <% } %>
           </div>
           <div class="col-md-2">
           </div>

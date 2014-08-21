@@ -4,6 +4,8 @@
     <%
       String famUrl = request.getContextPath() + "/browse/" + request.getAttribute("family");
       String prodUrl = famUrl + "/" + request.getAttribute("product");
+      String verUrl = prodUrl + "/" + request.getAttribute("version");
+      String[] list = (String[]) request.getAttribute("list");
     %>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -51,8 +53,8 @@
     <div class="container">
       <ol class="breadcrumb">
         <li><a href="<%=request.getContextPath()%>/browse"><span class="glyphicon glyphicon-home"></span></a></li>
-        <li><a href="<%=famUrl%>"><%=request.getAttribute("family")%></a></li>
-        <li><a href="<%=prodUrl%>"><%=request.getAttribute("product")%></a></li>
+        <li><a href="<%=famUrl%>.html"><%=request.getAttribute("family")%></a></li>
+        <li><a href="<%=prodUrl%>.html"><%=request.getAttribute("product")%></a></li>
         <li class="active"><%=request.getAttribute("version")%></li>
       </ol>
 
@@ -73,18 +75,20 @@
                   <tfoot>
                     <tr>
                       <td colspan="3">
-                        <small class="pull-left text-muted">1 folder and 24 files, 5.53 KB in total</small>
+                        <small class="pull-left text-muted">0 folders and <%=list.length%> files, - KB in total</small>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <tr>
-                      <td data-sort-value="archive.7z">
-                        <span class="glyphicon glyphicon-file"></span>
-                        <a href="archive.7z">archive.7z</a>
-                      </td>
-                      <td class="text-right">14 bytes</td>
-                      <td class="text-right">10 months ago</td>
-                    </tr>
+                    <% for(int i = 0; i < list.length; i+=1) { %>
+                      <tr>
+                        <td>
+                          <span class="glyphicon glyphicon-file"></span>
+                          <a href="<%=verUrl%>/<%=list[i]%>"><%=list[i]%></a>
+                        </td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">-</td>
+                      </tr>
+                    <% } %>
                   </tbody>
                 </table>
               </div>
