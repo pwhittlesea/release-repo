@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.me.thega.controller.exception.NotFoundException;
+import uk.me.thega.model.Named;
+import uk.me.thega.model.metadata.ProductMetadata;
+import uk.me.thega.model.util.MetadataUnmarshaller;
 
 @Controller
 @RequestMapping("/browse")
@@ -22,18 +27,17 @@ public class BrowseController extends AbstractController {
 	private static final String BASE_DIR = System.getProperty("user.home") + "/repository";
 
 	@RequestMapping(value = "/{family}", method = RequestMethod.GET)
-	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException {
+	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
 		populateFamilyGet(family, model);
 
-		checkAndGetContentsOf(BASE_DIR);
 		final File[] products = checkAndGetContentsOf(BASE_DIR + "/" + family);
-		final List<String> list = new ArrayList<String>();
+		final List<ProductMetadata> list = new ArrayList<ProductMetadata>();
 		for (int i = 0; i < products.length; i++) {
 			if (products[i].isDirectory()) {
-				list.add(products[i].getName());
+				list.add(getMetadataFromFolder(products[i], ProductMetadata.class));
 			}
 		}
-		model.addAttribute("list", list.toArray(new String[list.size()]));
+		model.addAttribute("list", list.toArray(new ProductMetadata[list.size()]));
 
 		return "browseFamily";
 	}
@@ -43,9 +47,18 @@ public class BrowseController extends AbstractController {
 		populateGet(model);
 
 		final File[] families = checkAndGetContentsOf(BASE_DIR);
-
-		model.addAttribute("oddList", everyOther(0, new ArrayList<String>(), families));
-		model.addAttribute("evenList", everyOther(1, new ArrayList<String>(), families));
+		final List<String> leftList = new ArrayList<String>();
+		final List<String> rightList = new ArrayList<String>();
+		for (int i = 0; i < families.length; i++) {
+			final String name = families[i].getName();
+			if ((i % 2) == 0) {
+				leftList.add(name);
+			} else {
+				rightList.add(name);
+			}
+		}
+		model.addAttribute("leftList", leftList);
+		model.addAttribute("rightList", rightList);
 
 		return "browse";
 	}
@@ -54,8 +67,6 @@ public class BrowseController extends AbstractController {
 	public String browseProductGet(@PathVariable final String family, @PathVariable final String product, final ModelMap model) throws IOException {
 		populateProductGet(family, product, model);
 
-		checkAndGetContentsOf(BASE_DIR);
-		checkAndGetContentsOf(BASE_DIR + "/" + family);
 		final File[] versions = checkAndGetContentsOf(BASE_DIR + "/" + family + "/" + product);
 		final List<String> list = new ArrayList<String>();
 		for (int i = 0; i < versions.length; i++) {
@@ -72,9 +83,6 @@ public class BrowseController extends AbstractController {
 	public String browseVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
 		populateVersionGet(family, product, version, model);
 
-		checkAndGetContentsOf(BASE_DIR);
-		checkAndGetContentsOf(BASE_DIR + "/" + family);
-		checkAndGetContentsOf(BASE_DIR + "/" + family + "/" + product);
 		final File[] resources = checkAndGetContentsOf(BASE_DIR + "/" + family + "/" + product + "/" + version);
 		final List<String> list = new ArrayList<String>();
 		for (int i = 0; i < resources.length; i++) {
@@ -96,13 +104,11 @@ public class BrowseController extends AbstractController {
 		return dir.listFiles();
 	}
 
-	private String[] everyOther(final int offset, final List<String> outputArray, final File[] inputArray) {
-		for (int i = offset; i < inputArray.length; i += 2) {
-			if (inputArray[i].isDirectory()) {
-				outputArray.add(inputArray[i].getName());
-			}
-		}
-		return outputArray.toArray(new String[outputArray.size()]);
+	private <T extends Named> T getMetadataFromFolder(final File folder, final Class<T> clazz) throws JAXBException {
+		final T metadata = MetadataUnmarshaller.un(folder.getPath() + "/metadata.xml", clazz);
+		metadata.setName(folder.getName());
+		return metadata;
+
 	}
 
 	private void populateFamilyGet(final String family, final ModelMap model) {
