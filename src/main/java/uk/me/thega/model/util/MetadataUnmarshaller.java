@@ -9,11 +9,10 @@ import javax.xml.bind.Unmarshaller;
 public class MetadataUnmarshaller {
 
 	@SuppressWarnings("unchecked")
-	public static <T> T un(final String path, final Class<T> clazz) throws JAXBException {
+	public static <T> T un(final File path, final Class<T> clazz) throws JAXBException {
 		final JAXBContext jc = JAXBContext.newInstance(clazz);
 		final Unmarshaller unmarshaller = jc.createUnmarshaller();
-		final File xml = new File(path);
-		return (T) unmarshaller.unmarshal(xml);
+		return (T) unmarshaller.unmarshal(path);
 	}
 
 	private MetadataUnmarshaller() {

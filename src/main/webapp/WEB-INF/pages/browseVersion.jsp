@@ -22,20 +22,20 @@
                   <tfoot>
                     <tr>
                       <td colspan="3">
-                        <small class="pull-left text-muted">0 folders and <%=list.length%> files, - KB in total</small>
+                        <small class="pull-left text-muted">0 folders and ${list.length} files, - KB in total</small>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <% for(int i = 0; i < list.length; i+=1) { %>
+                    <c:forEach items="${resources}" var="resource">
                       <tr>
                         <td>
                           <span class="glyphicon glyphicon-file"></span>
-                          <a href="<%=verUrl%>/<%=list[i]%>"><%=list[i]%></a>
+                          <a href="${contextPath}/download/${family}/${product}/${version}/${resource}">${resource}</a>
                         </td>
                         <td class="text-right">-</td>
                         <td class="text-right">-</td>
                       </tr>
-                    <% } %>
+                    </c:forEach>
                   </tbody>
                 </table>
               </div>

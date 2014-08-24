@@ -9,9 +9,8 @@
         <div class="row">
           <div class="col-md-8 col-md-offset-2">
             <p class="text-center lead">Select the product</p>
-            <c:forEach items="${list}" var="product">
-                <a href="${contextPath}/browse/${family}/${product.name}.html"
-                	class="btn btn-${(product.discontinued) ? "default" : "primary"} btn-lg btn-block">${product.name}</a>
+            <c:forEach items="${products}" var="product">
+              <a href="${contextPath}/browse/${family}/${product}.html" class="btn btn-primary btn-lg btn-block">${product}</a>
             </c:forEach>
           </div>
         </div>

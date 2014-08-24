@@ -8,9 +8,16 @@ import uk.me.thega.model.Named;
 @XmlRootElement
 public class ProductMetadata implements Discontinuable, Named {
 
-	private boolean discontinued;
+	private boolean discontinued = false;
 
 	private String name;
+
+	public ProductMetadata() {
+	}
+
+	public ProductMetadata(final String name) {
+		this.name = name;
+	}
 
 	@Override
 	public String getName() {

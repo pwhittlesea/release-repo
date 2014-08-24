@@ -3,7 +3,9 @@ package uk.me.thega.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -16,9 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.me.thega.controller.exception.NotFoundException;
-import uk.me.thega.model.Named;
+import uk.me.thega.model.metadata.MetadataFactory;
 import uk.me.thega.model.metadata.ProductMetadata;
-import uk.me.thega.model.util.MetadataUnmarshaller;
 
 @Controller
 @RequestMapping("/browse")
@@ -31,13 +32,20 @@ public class BrowseController extends AbstractController {
 		populateFamilyGet(family, model);
 
 		final File[] products = checkAndGetContentsOf(BASE_DIR + "/" + family);
-		final List<ProductMetadata> list = new ArrayList<ProductMetadata>();
+		final List<String> list = new ArrayList<String>();
+		final Map<String, ProductMetadata> metadataMap = new HashMap<String, ProductMetadata>();
 		for (int i = 0; i < products.length; i++) {
 			if (products[i].isDirectory()) {
-				list.add(getMetadataFromFolder(products[i], ProductMetadata.class));
+				final String prodName = products[i].getName();
+				final ProductMetadata metadata = MetadataFactory.createProductMetadata(products[i]);
+				if (metadata != null) {
+					metadataMap.put(prodName, metadata);
+				}
+				list.add(prodName);
 			}
 		}
-		model.addAttribute("list", list.toArray(new ProductMetadata[list.size()]));
+		model.addAttribute("products", list);
+		model.addAttribute("metadata", metadataMap);
 
 		return "browseFamily";
 	}
@@ -74,7 +82,7 @@ public class BrowseController extends AbstractController {
 				list.add(versions[i].getName());
 			}
 		}
-		model.addAttribute("list", list.toArray(new String[list.size()]));
+		model.addAttribute("versions", list);
 
 		return "browseProduct";
 	}
@@ -90,7 +98,7 @@ public class BrowseController extends AbstractController {
 				list.add(resources[i].getName());
 			}
 		}
-		model.addAttribute("list", list.toArray(new String[list.size()]));
+		model.addAttribute("resources", list);
 
 		return "browseVersion";
 	}
@@ -102,13 +110,6 @@ public class BrowseController extends AbstractController {
 			throw new NotFoundException("Not Found");
 		}
 		return dir.listFiles();
-	}
-
-	private <T extends Named> T getMetadataFromFolder(final File folder, final Class<T> clazz) throws JAXBException {
-		final T metadata = MetadataUnmarshaller.un(folder.getPath() + "/metadata.xml", clazz);
-		metadata.setName(folder.getName());
-		return metadata;
-
 	}
 
 	private void populateFamilyGet(final String family, final ModelMap model) {
