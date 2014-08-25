@@ -22,7 +22,7 @@
                   <tfoot>
                     <tr>
                       <td colspan="3">
-                        <small class="pull-left text-muted">0 folders and ${list.length} files, - KB in total</small>
+                        <small class="pull-left text-muted">${resources.size()} files, ${totalSize} in total</small>
                     </tr>
                   </tfoot>
                   <tbody>
@@ -30,10 +30,10 @@
                       <tr>
                         <td>
                           <span class="glyphicon glyphicon-file"></span>
-                          <a href="${contextPath}/download/${family}/${product}/${version}/${resource}">${resource}</a>
+                          <a href="${contextPath}/download/${family}/${product}/${version}/${resource[0]}">${resource[0]}</a>
                         </td>
-                        <td class="text-right">-</td>
-                        <td class="text-right">-</td>
+                        <td class="text-right">${resource[1]}</td>
+                        <td class="text-right">${resource[2]}</td>
                       </tr>
                     </c:forEach>
                   </tbody>
