@@ -6,13 +6,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping(UrlMappings.ROOT_INDEX)
 public class IndexController extends AbstractController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String indexGet(final ModelMap model) {
 		populateGet(model);
-		// Spring uses InternalResourceViewResolver and return back index.jsp
 		return "index";
 	}
 

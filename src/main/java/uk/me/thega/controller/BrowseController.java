@@ -22,12 +22,10 @@ import uk.me.thega.model.metadata.MetadataFactory;
 import uk.me.thega.model.metadata.ProductMetadata;
 
 @Controller
-@RequestMapping("/browse")
+@RequestMapping(UrlMappings.ROOT_BROWSE)
 public class BrowseController extends AbstractController {
 
-	private static final String BASE_DIR = System.getProperty("user.home") + "/repository";
-
-	@RequestMapping(value = "/{family}", method = RequestMethod.GET)
+	@RequestMapping(value = UrlMappings.FAMILY, method = RequestMethod.GET)
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
 		populateFamilyGet(family, model);
 
@@ -71,7 +69,7 @@ public class BrowseController extends AbstractController {
 		return "browse";
 	}
 
-	@RequestMapping(value = "/{family}/{product}", method = RequestMethod.GET)
+	@RequestMapping(value = UrlMappings.PRODUCT, method = RequestMethod.GET)
 	public String browseProductGet(@PathVariable final String family, @PathVariable final String product, final ModelMap model) throws IOException {
 		populateProductGet(family, product, model);
 
@@ -87,7 +85,7 @@ public class BrowseController extends AbstractController {
 		return "browseProduct";
 	}
 
-	@RequestMapping(value = "/{family}/{product}/{version}", method = RequestMethod.GET)
+	@RequestMapping(value = UrlMappings.VERSION, method = RequestMethod.GET)
 	public String browseVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
 		populateVersionGet(family, product, version, model);
 

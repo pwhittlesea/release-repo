@@ -17,14 +17,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import uk.me.thega.controller.exception.NotFoundException;
 
 @Controller
-@RequestMapping("/download")
+@RequestMapping(UrlMappings.ROOT_DOWNLOAD)
 public class DownloadController extends AbstractController {
 
-	private static final String BASE_DIR = System.getProperty("user.home") + "/repository";
-
-	@RequestMapping(value = "/{family}/{product}/{version}/{file}.{extension}", method = RequestMethod.GET)
-	public void downloadExtensionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String file, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
-		final String fileToDownload = BASE_DIR + '/' + family + '/' + product + '/' + version + '/' + file + '.' + extension;
+	@RequestMapping(value = UrlMappings.FILE_PATH, method = RequestMethod.GET)
+	public void downloadExtensionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
+		final String fileToDownload = BASE_DIR + '/' + family + '/' + product + '/' + version + '/' + fileName + '.' + extension;
 		final File download = new File(fileToDownload);
 		if (!download.isFile()) {
 			throw new NotFoundException("File not found: " + fileToDownload);
