@@ -11,17 +11,15 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import uk.me.thega.controller.exception.NotFoundException;
 import uk.me.thega.model.metadata.MetadataFactory;
 import uk.me.thega.model.metadata.ProductMetadata;
+import uk.me.thega.model.util.FileSystemUtil;
 import uk.me.thega.model.util.SizeCalculator;
 
 @Controller
@@ -29,15 +27,6 @@ import uk.me.thega.model.util.SizeCalculator;
 public class BrowseController extends AbstractController {
 
 	private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
-
-	private static File[] checkAndGetContentsOf(final String path) throws IOException {
-		final Resource resource = new FileSystemResource(path);
-		final File dir = resource.getFile();
-		if (!dir.isDirectory()) {
-			throw new NotFoundException("Not Found");
-		}
-		return dir.listFiles();
-	}
 
 	private static void populateFamilyGet(final String family, final ModelMap model) {
 		populateGet(model);
@@ -58,13 +47,12 @@ public class BrowseController extends AbstractController {
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
 		populateFamilyGet(family, model);
 
-		final File[] products = checkAndGetContentsOf(BASE_DIR + "/" + family);
 		final List<String> list = new ArrayList<String>();
 		final Map<String, ProductMetadata> metadataMap = new HashMap<String, ProductMetadata>();
-		for (int i = 0; i < products.length; i++) {
-			if (products[i].isDirectory()) {
-				final String prodName = products[i].getName();
-				final ProductMetadata metadata = MetadataFactory.createProductMetadata(products[i]);
+		for (final File product : FileSystemUtil.products(family)) {
+			if (product.isDirectory()) {
+				final String prodName = product.getName();
+				final ProductMetadata metadata = MetadataFactory.createProductMetadata(product);
 				if (metadata != null) {
 					metadataMap.put(prodName, metadata);
 				}
@@ -81,12 +69,13 @@ public class BrowseController extends AbstractController {
 	public String browseGet(final ModelMap model) throws IOException {
 		populateGet(model);
 
-		final File[] families = checkAndGetContentsOf(BASE_DIR);
 		final List<String> leftList = new ArrayList<String>();
 		final List<String> rightList = new ArrayList<String>();
-		for (int i = 0; i < families.length; i++) {
-			final String name = families[i].getName();
-			if ((i % 2) == 0) {
+		int i = 0;
+
+		for (final File family : FileSystemUtil.families()) {
+			final String name = family.getName();
+			if ((i++ % 2) == 0) {
 				leftList.add(name);
 			} else {
 				rightList.add(name);
@@ -102,11 +91,19 @@ public class BrowseController extends AbstractController {
 	public String browseProductGet(@PathVariable final String family, @PathVariable final String product, final ModelMap model) throws IOException {
 		populateProductGet(family, product, model);
 
-		final File[] versions = checkAndGetContentsOf(BASE_DIR + "/" + family + "/" + product);
 		final List<String> list = new ArrayList<String>();
-		for (int i = 0; i < versions.length; i++) {
-			if (versions[i].isDirectory()) {
-				list.add(versions[i].getName());
+
+		final List<File> versions;
+		if (product.equals("all")) {
+			versions = FileSystemUtil.allVersions(family);
+		} else {
+			versions = FileSystemUtil.versions(family, product);
+		}
+
+		for (final File version : versions) {
+			final String name = version.getName();
+			if (version.isDirectory() && !list.contains(name)) {
+				list.add(name);
 			}
 		}
 		model.addAttribute("versions", list);
@@ -118,17 +115,24 @@ public class BrowseController extends AbstractController {
 	public String browseVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
 		populateVersionGet(family, product, version, model);
 
-		final File[] resources = checkAndGetContentsOf(BASE_DIR + "/" + family + "/" + product + "/" + version);
 		final List<String[]> list = new ArrayList<String[]>();
+
+		final List<File> resources;
+		if (product.equals("all")) {
+			resources = FileSystemUtil.allResources(family, version);
+		} else {
+			resources = FileSystemUtil.resources(family, product, version);
+		}
+
 		long totalLen = 0;
-		for (int i = 0; i < resources.length; i++) {
-			if (resources[i].isFile()) {
-				final long len = resources[i].length();
-				final long lastModified = resources[i].lastModified();
+		for (final File resource : resources) {
+			if (resource.isFile()) {
+				final long len = resource.length();
+				final long lastModified = resource.lastModified();
 
 				final String lenSt = SizeCalculator.getStringSizeLengthFile(len);
 				final String lastModifiedSt = dateFormatter.format(new Date(lastModified));
-				final String name = resources[i].getName();
+				final String name = resource.getName();
 
 				final String[] resourceSpec = { name, lenSt, lastModifiedSt };
 				list.add(resourceSpec);
