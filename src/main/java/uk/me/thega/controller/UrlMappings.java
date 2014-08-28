@@ -15,4 +15,5 @@ final class UrlMappings {
 	static final String ROOT_INDEX = "/";
 	static final String ROOT_UPLOAD = "/upload";
 	static final String VERSION = "/{family}/{product}/{version}";
+	static final String VERSION_DOWNLOAD = "/{family}/{product}/{version}.{extension}";
 }
