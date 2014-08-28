@@ -26,20 +26,10 @@ public class UploadController extends AbstractController {
 	@RequestMapping(value = UrlMappings.FILE_PATH, method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
 	public void uploadPost(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, @RequestParam("file") final MultipartFile file) throws IOException {
-		final StringBuffer sb = new StringBuffer();
-		sb.append(BASE_DIR).append(File.separator);
-		sb.append(family).append(File.separator);
-		sb.append(product).append(File.separator);
-		sb.append(version).append(File.separator);
-		final File dir = new File(sb.toString());
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-
-		sb.append(fileName).append('.').append(extension);
+		createParentFolder(family, product, version);
 
 		// Create the file on server
-		final File serverFile = new File(sb.toString());
+		final File serverFile = new File(PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension));
 		final BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 		stream.write(file.getBytes());
 		stream.close();
@@ -49,27 +39,23 @@ public class UploadController extends AbstractController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public void uploadPut(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 		final InputStream inputStream = request.getInputStream();
-
 		if (inputStream != null) {
-			final StringBuffer sb = new StringBuffer();
-			sb.append(BASE_DIR).append(File.separator);
-			sb.append(family).append(File.separator);
-			sb.append(product).append(File.separator);
-			sb.append(version).append(File.separator);
-			final File dir = new File(sb.toString());
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
-
-			sb.append(fileName).append('.').append(extension);
+			createParentFolder(family, product, version);
 
 			// Create the file on server
-			final File serverFile = new File(sb.toString());
+			final File serverFile = new File(PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension));
 			final BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(serverFile));
 
 			IOUtils.copyLarge(inputStream, outputStream);
 			outputStream.flush();
 			outputStream.close();
+		}
+	}
+
+	private void createParentFolder(final String family, final String product, final String version) {
+		final File dir = new File(PATH_HELPER.getVersionPath(family, product, version));
+		if (!dir.exists()) {
+			dir.mkdirs();
 		}
 	}
 }

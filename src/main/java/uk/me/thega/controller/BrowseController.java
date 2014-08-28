@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.me.thega.model.metadata.MetadataFactory;
 import uk.me.thega.model.metadata.ProductMetadata;
-import uk.me.thega.model.util.FileSystemUtil;
 import uk.me.thega.model.util.SizeCalculator;
 
 @Controller
@@ -49,7 +48,7 @@ public class BrowseController extends AbstractController {
 
 		final List<String> list = new ArrayList<String>();
 		final Map<String, ProductMetadata> metadataMap = new HashMap<String, ProductMetadata>();
-		for (final File product : FileSystemUtil.products(family)) {
+		for (final File product : FILE_SYSTEM_UTIL.products(family)) {
 			if (product.isDirectory()) {
 				final String prodName = product.getName();
 				final ProductMetadata metadata = MetadataFactory.createProductMetadata(product);
@@ -73,7 +72,7 @@ public class BrowseController extends AbstractController {
 		final List<String> rightList = new ArrayList<String>();
 		int i = 0;
 
-		for (final File family : FileSystemUtil.families()) {
+		for (final File family : FILE_SYSTEM_UTIL.families()) {
 			final String name = family.getName();
 			if ((i++ % 2) == 0) {
 				leftList.add(name);
@@ -95,9 +94,9 @@ public class BrowseController extends AbstractController {
 
 		final List<File> versions;
 		if (product.equals("all")) {
-			versions = FileSystemUtil.allVersions(family);
+			versions = FILE_SYSTEM_UTIL.allVersions(family);
 		} else {
-			versions = FileSystemUtil.versions(family, product);
+			versions = FILE_SYSTEM_UTIL.versions(family, product);
 		}
 
 		for (final File version : versions) {
@@ -119,9 +118,9 @@ public class BrowseController extends AbstractController {
 
 		final List<File> resources;
 		if (product.equals("all")) {
-			resources = FileSystemUtil.allResources(family, version);
+			resources = FILE_SYSTEM_UTIL.allResources(family, version);
 		} else {
-			resources = FileSystemUtil.resources(family, product, version);
+			resources = FILE_SYSTEM_UTIL.resources(family, product, version);
 		}
 
 		long totalLen = 0;
