@@ -21,11 +21,16 @@ import uk.me.thega.controller.exception.NotFoundException;
 public class DownloadController extends AbstractController {
 
 	@RequestMapping(value = UrlMappings.FILE_PATH, method = RequestMethod.GET)
-	public void downloadExtensionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
-		final String fileToDownload = PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension);
-		final File download = new File(fileToDownload);
-		if (!download.isFile()) {
-			throw new NotFoundException("File not found: " + fileToDownload);
+	public void downloadResourceGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
+		final File download;
+		if (product.equals("all")) {
+			download = FILE_SYSTEM_UTIL.findResource(family, version, fileName + '.' + extension);
+		} else {
+			final String fileToDownload = PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension);
+			download = new File(fileToDownload);
+			if (!download.isFile()) {
+				throw new NotFoundException("File not found: " + fileToDownload);
+			}
 		}
 		final InputStream is = new FileInputStream(download);
 		IOUtils.copy(is, response.getOutputStream());

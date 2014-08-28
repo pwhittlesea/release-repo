@@ -8,11 +8,11 @@ import java.util.List;
 
 import uk.me.thega.controller.exception.NotFoundException;
 
-public class FileSystemUtil {
+public class RepositoryFileSystem {
 
 	private final PathHelper pathHelper;
 
-	public FileSystemUtil(final PathHelper pathHelper) {
+	public RepositoryFileSystem(final PathHelper pathHelper) {
 		this.pathHelper = pathHelper;
 	}
 
@@ -40,6 +40,31 @@ public class FileSystemUtil {
 
 	public List<File> families() throws NotFoundException {
 		return getContentsOf(pathHelper.getRepositoryPath());
+	}
+
+	/**
+	 * We have a family, version and file name but do not know which product the file was in.
+	 * 
+	 * Lets hope noone puts two files by the same name in two products otherwise this will get nasty.
+	 * 
+	 * @param family
+	 *            the product family.
+	 * @param version
+	 *            the product version.
+	 * @param name
+	 *            the name of the resource to find.
+	 * @return the found resource.
+	 * @throws NotFoundException
+	 *             if we cannot find the resource.
+	 */
+	public File findResource(final String family, final String version, final String name) throws NotFoundException {
+		for (final File product : products(family)) {
+			final File potentialMatch = new File(pathHelper.getResourcePath(family, product.getName(), version, name));
+			if (potentialMatch.isFile()) {
+				return potentialMatch;
+			}
+		}
+		throw new NotFoundException("Could not find resource: family[" + family + "] version[" + version + "] with name " + name);
 	}
 
 	public List<File> products(final String family) throws NotFoundException {
