@@ -3,13 +3,26 @@ package uk.me.thega.model.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import uk.me.thega.controller.exception.NotFoundException;
 
 public class FileSystemUtil {
 
 	protected static final String BASE_DIR = System.getProperty("user.home") + "/repository";
+
+	private static final Comparator<File> VERSION_COMPARATOR = new Comparator<File>() {
+		@Override
+		public int compare(final File o1, final File o2) {
+			final DefaultArtifactVersion v1 = new DefaultArtifactVersion(o1.getName());
+			final DefaultArtifactVersion v2 = new DefaultArtifactVersion(o2.getName());
+			return v2.compareTo(v1);
+		}
+	};
 
 	public static List<File> allResources(final String family, final String version) throws NotFoundException {
 		final List<File> allResources = new ArrayList<File>();
@@ -29,6 +42,7 @@ public class FileSystemUtil {
 		for (final File product : products(family)) {
 			allVersions.addAll(versions(family, product.getName()));
 		}
+		Collections.sort(allVersions, VERSION_COMPARATOR);
 		return allVersions;
 	}
 
@@ -45,7 +59,9 @@ public class FileSystemUtil {
 	}
 
 	public static List<File> versions(final String family, final String product) throws NotFoundException {
-		return checkAndGetContentsOf(BASE_DIR + File.separator + family + File.separator + product);
+		final List<File> versions = checkAndGetContentsOf(BASE_DIR + File.separator + family + File.separator + product);
+		Collections.sort(versions, VERSION_COMPARATOR);
+		return versions;
 	}
 
 	private static List<File> checkAndGetContentsOf(final File dir) throws NotFoundException {
