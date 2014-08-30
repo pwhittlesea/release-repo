@@ -68,7 +68,14 @@ public class RepositoryFileSystem {
 	}
 
 	public List<File> products(final String family) throws NotFoundException {
-		return getContentsOf(pathHelper.getFamilyPath(family));
+		final List<File> allFiles = getContentsOf(pathHelper.getFamilyPath(family));
+		final List<File> allFolders = new ArrayList<File>();
+		for (final File file : allFiles) {
+			if (file.isDirectory()) {
+				allFolders.add(file);
+			}
+		}
+		return allFolders;
 	}
 
 	public List<File> resources(final String family, final String product, final String version) throws NotFoundException {

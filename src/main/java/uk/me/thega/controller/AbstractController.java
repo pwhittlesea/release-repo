@@ -8,7 +8,7 @@ import uk.me.thega.model.util.RepositoryFileSystem;
 
 public abstract class AbstractController {
 
-	protected static void populateGet(final ModelMap model) {
+	static void populateGet(final ModelMap model) {
 		model.addAttribute("productName", "Product Name");
 		model.addAttribute("company", "Company Name");
 	}

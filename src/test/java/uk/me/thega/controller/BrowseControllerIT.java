@@ -15,6 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.ui.ModelMap;
 
+import uk.me.thega.controller.exception.NotFoundException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/testApplicationContext.xml" })
 public class BrowseControllerIT {
@@ -37,7 +39,55 @@ public class BrowseControllerIT {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testFamilyGet() throws Exception {
+	public void testFamilyGetFamily1() throws Exception {
+		final Map<String, Object> loadedObjects = new HashMap<String, Object>();
+		final ModelMap mockModelMap = createMockModelMap(loadedObjects);
+
+		controller.browseFamilyGet("Family 1", mockModelMap);
+
+		Assert.assertTrue("Expected some products", loadedObjects.containsKey("products"));
+
+		final List<String> products = (List<String>) loadedObjects.get("products");
+		Assert.assertEquals("Expected two elements", 2, products.size());
+		Assert.assertEquals("Expected project3", "project3", products.get(0));
+		Assert.assertEquals("Expected project4", "project4", products.get(1));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFamilyGetFamily2() throws Exception {
+		final Map<String, Object> loadedObjects = new HashMap<String, Object>();
+		final ModelMap mockModelMap = createMockModelMap(loadedObjects);
+
+		controller.browseFamilyGet("family2", mockModelMap);
+
+		Assert.assertTrue("Expected some products", loadedObjects.containsKey("products"));
+
+		final List<String> products = (List<String>) loadedObjects.get("products");
+		Assert.assertEquals("Expected two elements", 2, products.size());
+		Assert.assertEquals("Expected project3", "Project 1", products.get(0));
+		Assert.assertEquals("Expected project4", "Project 2", products.get(1));
+
+	}
+
+	@Test(expected = NotFoundException.class)
+	public void testFamilyGetFamilyException() throws Exception {
+		final Map<String, Object> loadedObjects = new HashMap<String, Object>();
+		final ModelMap mockModelMap = createMockModelMap(loadedObjects);
+
+		controller.browseFamilyGet("missing", mockModelMap);
+	}
+
+	/**
+	 * Test the base get controller method that will return lists of families in the repository.
+	 * 
+	 * @throws Exception
+	 *             the unexpected exception
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGet() throws Exception {
 		final Map<String, Object> loadedObjects = new HashMap<String, Object>();
 		final ModelMap mockModelMap = createMockModelMap(loadedObjects);
 
@@ -53,6 +103,5 @@ public class BrowseControllerIT {
 		final List<String> rightList = (List<String>) loadedObjects.get("rightList");
 		Assert.assertEquals("Expected one element on the right", 1, rightList.size());
 		Assert.assertEquals("Expected family2", "family2", rightList.get(0));
-
 	}
 }

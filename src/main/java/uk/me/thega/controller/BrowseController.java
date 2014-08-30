@@ -27,17 +27,17 @@ public class BrowseController extends AbstractController {
 
 	private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
 
-	private static void populateFamilyGet(final String family, final ModelMap model) {
+	static void populateFamilyGet(final String family, final ModelMap model) {
 		populateGet(model);
 		model.addAttribute("family", family);
 	}
 
-	private static void populateProductGet(final String family, final String product, final ModelMap model) {
+	static void populateProductGet(final String family, final String product, final ModelMap model) {
 		populateFamilyGet(family, model);
 		model.addAttribute("product", product);
 	}
 
-	private static void populateVersionGet(final String family, final String product, final String version, final ModelMap model) {
+	static void populateVersionGet(final String family, final String product, final String version, final ModelMap model) {
 		populateProductGet(family, product, model);
 		model.addAttribute("version", version);
 	}
@@ -49,14 +49,12 @@ public class BrowseController extends AbstractController {
 		final List<String> list = new ArrayList<String>();
 		final Map<String, ProductMetadata> metadataMap = new HashMap<String, ProductMetadata>();
 		for (final File product : getFileSystemUtil().products(family)) {
-			if (product.isDirectory()) {
-				final String prodName = product.getName();
-				final ProductMetadata metadata = MetadataFactory.createProductMetadata(product);
-				if (metadata != null) {
-					metadataMap.put(prodName, metadata);
-				}
-				list.add(prodName);
+			final String prodName = product.getName();
+			final ProductMetadata metadata = MetadataFactory.createProductMetadata(product);
+			if (metadata != null) {
+				metadataMap.put(prodName, metadata);
 			}
+			list.add(prodName);
 		}
 		model.addAttribute("products", list);
 		model.addAttribute("metadata", metadataMap);
