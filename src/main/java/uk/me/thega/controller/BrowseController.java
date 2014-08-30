@@ -48,7 +48,7 @@ public class BrowseController extends AbstractController {
 
 		final List<String> list = new ArrayList<String>();
 		final Map<String, ProductMetadata> metadataMap = new HashMap<String, ProductMetadata>();
-		for (final File product : FILE_SYSTEM_UTIL.products(family)) {
+		for (final File product : getFileSystemUtil().products(family)) {
 			if (product.isDirectory()) {
 				final String prodName = product.getName();
 				final ProductMetadata metadata = MetadataFactory.createProductMetadata(product);
@@ -72,7 +72,7 @@ public class BrowseController extends AbstractController {
 		final List<String> rightList = new ArrayList<String>();
 		int i = 0;
 
-		for (final File family : FILE_SYSTEM_UTIL.families()) {
+		for (final File family : getFileSystemUtil().families()) {
 			final String name = family.getName();
 			if ((i++ % 2) == 0) {
 				leftList.add(name);
@@ -94,9 +94,9 @@ public class BrowseController extends AbstractController {
 
 		final List<File> versions;
 		if (product.equals("all")) {
-			versions = FILE_SYSTEM_UTIL.allVersions(family);
+			versions = getFileSystemUtil().allVersions(family);
 		} else {
-			versions = FILE_SYSTEM_UTIL.versions(family, product);
+			versions = getFileSystemUtil().versions(family, product);
 		}
 
 		for (final File version : versions) {
@@ -118,9 +118,9 @@ public class BrowseController extends AbstractController {
 
 		final List<File> resources;
 		if (product.equals("all")) {
-			resources = FILE_SYSTEM_UTIL.allResources(family, version);
+			resources = getFileSystemUtil().allResources(family, version);
 		} else {
-			resources = FILE_SYSTEM_UTIL.resources(family, product, version);
+			resources = getFileSystemUtil().resources(family, product, version);
 		}
 
 		long totalLen = 0;

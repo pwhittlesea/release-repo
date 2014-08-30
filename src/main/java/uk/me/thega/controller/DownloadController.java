@@ -27,9 +27,9 @@ public class DownloadController extends AbstractController {
 	public void downloadResourceGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
 		final File download;
 		if (product.equals("all")) {
-			download = FILE_SYSTEM_UTIL.findResource(family, version, fileName + '.' + extension);
+			download = getFileSystemUtil().findResource(family, version, fileName + '.' + extension);
 		} else {
-			final String fileToDownload = PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension);
+			final String fileToDownload = getPathHelper().getResourcePath(family, product, version, fileName + '.' + extension);
 			download = new File(fileToDownload);
 			if (!download.isFile()) {
 				throw new NotFoundException("File not found: " + fileToDownload);
@@ -45,9 +45,9 @@ public class DownloadController extends AbstractController {
 	public void downloadVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
 		final List<File> download;
 		if (product.equals("all")) {
-			download = FILE_SYSTEM_UTIL.allResources(family, version);
+			download = getFileSystemUtil().allResources(family, version);
 		} else {
-			download = FILE_SYSTEM_UTIL.resources(family, product, version);
+			download = getFileSystemUtil().resources(family, product, version);
 		}
 
 		final ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());

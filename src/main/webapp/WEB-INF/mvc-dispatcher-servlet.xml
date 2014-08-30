@@ -12,12 +12,10 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
- 
-	<context:component-scan base-package="uk.me.thega.controller" />
+	
+	<import resource="classpath:spring/applicationContext.xml"/>
 
 	<mvc:resources mapping="/css/**" location="/css/" /> 
- 
-	<mvc:annotation-driven />
 	
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">

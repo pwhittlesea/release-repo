@@ -29,7 +29,7 @@ public class UploadController extends AbstractController {
 		createParentFolder(family, product, version);
 
 		// Create the file on server
-		final File serverFile = new File(PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension));
+		final File serverFile = new File(getPathHelper().getResourcePath(family, product, version, fileName + '.' + extension));
 		final BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 		stream.write(file.getBytes());
 		stream.close();
@@ -43,7 +43,7 @@ public class UploadController extends AbstractController {
 			createParentFolder(family, product, version);
 
 			// Create the file on server
-			final File serverFile = new File(PATH_HELPER.getResourcePath(family, product, version, fileName + '.' + extension));
+			final File serverFile = new File(getPathHelper().getResourcePath(family, product, version, fileName + '.' + extension));
 			final BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(serverFile));
 
 			IOUtils.copyLarge(inputStream, outputStream);
@@ -53,7 +53,7 @@ public class UploadController extends AbstractController {
 	}
 
 	private void createParentFolder(final String family, final String product, final String version) {
-		final File dir = new File(PATH_HELPER.getVersionPath(family, product, version));
+		final File dir = new File(getPathHelper().getVersionPath(family, product, version));
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
