@@ -43,8 +43,6 @@ public class BrowseControllerIT {
 
 		controller.browseGet(mockModelMap);
 
-		Assert.assertEquals("Expected a default product name", "Product Name", loadedObjects.get("productName"));
-		Assert.assertEquals("Expected a default company name", "Company Name", loadedObjects.get("company"));
 		Assert.assertTrue("Expected a leftList", loadedObjects.containsKey("leftList"));
 		Assert.assertTrue("Expected a rightList", loadedObjects.containsKey("rightList"));
 
