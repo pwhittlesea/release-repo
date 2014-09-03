@@ -12,11 +12,4 @@ public interface Discontinuable {
 	 */
 	boolean isDiscontinued();
 
-	/**
-	 * Set if this item is discontinued.
-	 * 
-	 * @param isDiscontinued
-	 *            true if discontinued.
-	 */
-	void setDiscontinued(final boolean isDiscontinued);
 }

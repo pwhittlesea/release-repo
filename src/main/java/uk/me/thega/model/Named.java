@@ -7,5 +7,4 @@ public interface Named {
 
 	String getName();
 
-	void setName(final String name);
 }

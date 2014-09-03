@@ -29,12 +29,10 @@ public class ProductMetadata implements Discontinuable, Named {
 		return discontinued;
 	}
 
-	@Override
 	public void setDiscontinued(final boolean isDiscontinued) {
 		this.discontinued = isDiscontinued;
 	}
 
-	@Override
 	public void setName(final String name) {
 		this.name = name;
 	}
