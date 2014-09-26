@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import uk.me.thega.model.metadata.MetadataFactory;
-import uk.me.thega.model.metadata.ProductMetadata;
+import uk.me.thega.model.util.MetadataHelper;
 import uk.me.thega.model.util.SizeCalculator;
 
 @Controller
@@ -47,17 +46,14 @@ public class BrowseController extends AbstractController {
 		populateFamilyGet(family, model);
 
 		final List<String> list = new ArrayList<String>();
-		final Map<String, ProductMetadata> metadataMap = new HashMap<String, ProductMetadata>();
+		final Map<String, Boolean> isDiscontinued = new HashMap<String, Boolean>();
 		for (final File product : getFileSystemUtil().products(family)) {
 			final String prodName = product.getName();
-			final ProductMetadata metadata = MetadataFactory.createProductMetadata(product);
-			if (metadata != null) {
-				metadataMap.put(prodName, metadata);
-			}
 			list.add(prodName);
+			isDiscontinued.put(prodName, MetadataHelper.isDiscontinued(product.getPath()));
 		}
 		model.addAttribute("products", list);
-		model.addAttribute("metadata", metadataMap);
+		model.addAttribute("discontinued", isDiscontinued);
 
 		return "browseFamily";
 	}

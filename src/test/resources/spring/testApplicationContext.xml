@@ -14,8 +14,8 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-
-	<import resource="classpath:WEB-INF/mvc-dispatcher-servlet.xml" />
+	
+	<import resource="classpath:spring/applicationContext.xml"/>
 
 	<bean
 		id="testRepositoryResource"

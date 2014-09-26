@@ -2,8 +2,15 @@ package uk.me.thega.model.util;
 
 import java.io.File;
 
+/**
+ * Helper to ensure that certain parts of the repository can be found without having to worry about OS specifics.
+ * 
+ * @author pwhittlesea
+ * 
+ */
 public class PathHelper {
 
+	/** The base path of the repo. */
 	private final String basePath;
 
 	public PathHelper(final String basePath) {
