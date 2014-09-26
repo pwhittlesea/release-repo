@@ -93,13 +93,16 @@ public class BrowseController extends AbstractController {
 			versions = getFileSystemUtil().versions(family, product);
 		}
 
+		final Map<String, String> statuses = new HashMap<String, String>();
 		for (final File version : versions) {
 			final String name = version.getName();
 			if (version.isDirectory() && !list.contains(name)) {
 				list.add(name);
+				statuses.put(name, MetadataHelper.status(version.getPath()));
 			}
 		}
 		model.addAttribute("versions", list);
+		model.addAttribute("status", statuses);
 
 		return "browseProduct";
 	}
