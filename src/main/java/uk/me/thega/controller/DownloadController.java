@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.me.thega.controller.exception.NotFoundException;
+import uk.me.thega.model.util.MetadataHelper;
 
 @Controller
 @RequestMapping(UrlMappings.ROOT_DOWNLOAD)
@@ -52,15 +53,18 @@ public class DownloadController extends AbstractController {
 
 		final ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 
+		final List<String> excluded = MetadataHelper.excludedFiles();
 		for (final File file : download) {
-			final FileInputStream is = new FileInputStream(file);
+			if (!excluded.contains(file.getName())) {
+				final FileInputStream is = new FileInputStream(file);
 
-			// Add to zip
-			zos.putNextEntry(new ZipEntry(file.getName()));
-			IOUtils.copy(is, zos);
-			zos.closeEntry();
+				// Add to zip
+				zos.putNextEntry(new ZipEntry(file.getName()));
+				IOUtils.copy(is, zos);
+				zos.closeEntry();
 
-			is.close();
+				is.close();
+			}
 		}
 		zos.flush();
 		zos.close();

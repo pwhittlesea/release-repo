@@ -121,8 +121,9 @@ public class BrowseController extends AbstractController {
 		}
 
 		long totalLen = 0;
+		final List<String> excluded = MetadataHelper.excludedFiles();
 		for (final File resource : resources) {
-			if (resource.isFile()) {
+			if (!excluded.contains(resource.getName()) && resource.isFile()) {
 				final long len = resource.length();
 				final long lastModified = resource.lastModified();
 

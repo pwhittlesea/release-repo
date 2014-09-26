@@ -10,9 +10,11 @@
       <div class="main-page">
         <div class="row">
           <div class="col-md-8 col-md-offset-2">
-            <p class="text-right">
-              <a href="${contextPath}/download/${family}/${product}/${version}.zip" class="btn btn-primary btn-xs">Download All</a>
-            </p>
+            <c:if test="${resources.size() > 1}">
+              <p class="text-right">
+                <a href="${contextPath}/download/${family}/${product}/${version}.zip" class="btn btn-primary btn-xs">Download All</a>
+              </p>
+            </c:if>
             <div class="table-responsive">
                 <table id="bs-table" class="table table-hover">
                   <thead>
