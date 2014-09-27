@@ -26,21 +26,6 @@ public class BrowseController extends AbstractController {
 
 	private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
 
-	static void populateFamilyGet(final String family, final ModelMap model) {
-		populateGet(model);
-		model.addAttribute("family", family);
-	}
-
-	static void populateProductGet(final String family, final String product, final ModelMap model) {
-		populateFamilyGet(family, model);
-		model.addAttribute("product", product);
-	}
-
-	static void populateVersionGet(final String family, final String product, final String version, final ModelMap model) {
-		populateProductGet(family, product, model);
-		model.addAttribute("version", version);
-	}
-
 	@RequestMapping(value = UrlMappings.FAMILY, method = RequestMethod.GET)
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
 		populateFamilyGet(family, model);
@@ -142,5 +127,20 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
 
 		return "browseVersion";
+	}
+
+	private void populateFamilyGet(final String family, final ModelMap model) {
+		populateGet(model);
+		model.addAttribute("family", family);
+	}
+
+	private void populateProductGet(final String family, final String product, final ModelMap model) {
+		populateFamilyGet(family, model);
+		model.addAttribute("product", product);
+	}
+
+	private void populateVersionGet(final String family, final String product, final String version, final ModelMap model) {
+		populateProductGet(family, product, model);
+		model.addAttribute("version", version);
 	}
 }
