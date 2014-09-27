@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
@@ -62,8 +64,10 @@ public class JiraHelper {
 	 *            the version of the product.
 	 * @return the change log.
 	 */
-	public String getChangeLogForVersion(final String family, final String product, final String version) {
-		final StringBuilder sb = new StringBuilder();
+	public Map<String, String> getChangeLogForVersion(final String family, final String product, final String version) {
+		// This seems a complex data type for storage, it may come in handy later.
+		final Map<String, String> keyToInfo = new HashMap<String, String>();
+
 		try {
 			final String familyJql = getJiraConfigFromLocation(false, pathHelper.getFamilyPath(family));
 			final String productJql = getJiraConfigFromLocation(false, pathHelper.getProductPath(family, product));
@@ -71,11 +75,17 @@ public class JiraHelper {
 			final SearchResult searchResult = runJQL(familyJql + " " + productJql + " " + versionJql);
 
 			for (final BasicIssue issue : searchResult.getIssues()) {
-				sb.append(getChangeLogForIssue(issue)).append("\n");
+				keyToInfo.put(issue.getKey(), getChangeLogForIssue(issue));
 			}
 		} catch (final Exception e) {
 		}
-		return sb.toString();
+
+		return keyToInfo;
+	}
+
+	public String getJiraUrl() throws IOException {
+		final String[] jiraConfiguration = getJiraConfiguration();
+		return jiraConfiguration[0].trim();
 	}
 
 	public boolean isEnabled() {
@@ -102,7 +112,7 @@ public class JiraHelper {
 		final JiraRestClient restClient = getRestClient();
 		final Promise<Issue> realIssueFutureResult = restClient.getIssueClient().getIssue(issue.getKey());
 		final Issue realIssue = realIssueFutureResult.get();
-		return issue.getKey() + ": " + realIssue.getSummary();
+		return realIssue.getSummary();
 	}
 
 	private String getJiraConfigFromLocation(final boolean canFail, final String path) throws IOException {
@@ -128,11 +138,6 @@ public class JiraHelper {
 	private String getJiraPassword() throws IOException {
 		final String[] jiraConfiguration = getJiraConfiguration();
 		return jiraConfiguration[2].trim();
-	}
-
-	private String getJiraUrl() throws IOException {
-		final String[] jiraConfiguration = getJiraConfiguration();
-		return jiraConfiguration[0].trim();
 	}
 
 	private String getJiraUsername() throws IOException {

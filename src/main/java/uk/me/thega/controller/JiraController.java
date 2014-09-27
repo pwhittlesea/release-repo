@@ -1,6 +1,7 @@
 package uk.me.thega.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -26,6 +27,13 @@ public class JiraController extends AbstractController {
 	@ResponseBody
 	public String metadataForVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
 		final JiraHelper jiraHelper = new JiraHelper(getPathHelper());
-		return jiraHelper.getChangeLogForVersion(family, product, version);
+		final Map<String, String> details = jiraHelper.getChangeLogForVersion(family, product, version);
+		final StringBuilder sb = new StringBuilder();
+		final String url = jiraHelper.getJiraUrl();
+		for (final String issueKey : details.keySet()) {
+			sb.append("<a href=\"").append(url).append("/browse/").append(issueKey).append("\">").append(issueKey).append("</a>: ");
+			sb.append(details.get(issueKey)).append("<br>");
+		}
+		return sb.toString();
 	}
 }
