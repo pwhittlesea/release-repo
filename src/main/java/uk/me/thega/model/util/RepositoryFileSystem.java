@@ -39,7 +39,14 @@ public class RepositoryFileSystem {
 	}
 
 	public List<File> families() throws NotFoundException {
-		return getContentsOf(pathHelper.getRepositoryPath());
+		final List<File> contents = getContentsOf(pathHelper.getRepositoryPath());
+		final List<File> folderContents = new ArrayList<File>();
+		for (final File file : contents) {
+			if (file.isDirectory()) {
+				folderContents.add(file);
+			}
+		}
+		return folderContents;
 	}
 
 	/**
