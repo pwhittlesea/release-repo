@@ -78,6 +78,11 @@ public class JiraHelper {
 		return sb.toString();
 	}
 
+	public boolean isEnabled() {
+		final File conf = new File(pathHelper.getRepositoryPath() + File.separator + ".jira");
+		return conf.isFile();
+	}
+
 	/**
 	 * Get the change log for a given {@link BasicIssue}.
 	 * 
