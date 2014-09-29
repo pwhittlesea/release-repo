@@ -1,14 +1,19 @@
 package uk.me.thega.model.util.jira;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +59,35 @@ public class JiraHelper {
 	 */
 	public JiraHelper(final PathHelper pathHelper) {
 		this.pathHelper = pathHelper;
+	}
+
+	public Map<String, String> getCachedChangeLogForVersion(final String family, final String product, final String version) {
+		final Map<String, String> map = new HashMap<String, String>();
+		if (isEnabled(family, product, version)) {
+			final File cacheFile = new File(pathHelper.getVersionPath(family, product, version) + File.separator + ".jiraCache");
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream(cacheFile);
+				final byte[] data = new byte[(int) cacheFile.length()];
+				fis.read(data);
+				final String content = new String(data, "UTF-8");
+				fis.close();
+				final JSONObject json = new JSONObject(content);
+				final Iterator<?> keys = json.keys();
+				while (keys.hasNext()) {
+					final String key = (String) keys.next();
+					map.put(key, (String) json.get(key));
+				}
+			} catch (final IOException e) {
+				logger.error("Could not get cached content", e);
+			} catch (final JSONException e) {
+				logger.error("Could not get cached content", e);
+			} finally {
+				IOUtils.closeQuietly(fis);
+			}
+
+		}
+		return map;
 	}
 
 	/**

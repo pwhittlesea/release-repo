@@ -27,7 +27,7 @@ public class JiraController extends AbstractController {
 	@ResponseBody
 	public String metadataForVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
 		final JiraHelper jiraHelper = new JiraHelper(getPathHelper());
-		final Map<String, String> details = jiraHelper.getChangeLogForVersion(family, product, version);
+		final Map<String, String> details = jiraHelper.getCachedChangeLogForVersion(family, product, version);
 		final StringBuilder sb = new StringBuilder();
 		final String url = jiraHelper.getJiraUrl();
 		for (final String issueKey : details.keySet()) {
