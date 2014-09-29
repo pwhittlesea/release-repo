@@ -2,7 +2,6 @@ package uk.me.thega.model.util.jira;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -65,18 +64,21 @@ public class JiraHelper {
 	public void cacheChangeLogForVersion(final String family, final String product, final String version) throws IOException {
 		if (isEnabled(family, product, version)) {
 			final Map<String, String> issues = getChangeLogForVersion(family, product, version);
+			final JSONObject json = new JSONObject(issues);
+			final String jsonString = json.toString();
 			final String path = getJiraCachePath(family, product, version);
 
-			// replace file
-			final File outputFile = new File(path);
-			outputFile.delete();
-			outputFile.createNewFile();
+			// Create some files here
+			logger.trace("JiraHelper: Caching in {}", path);
+			final File sourceFile = new File(path + ".temp");
+			final File fileToCopy = new File(path);
 
-			// write cache
-			final FileWriter fileWriter = new FileWriter(outputFile, false);
-			final JSONObject json = new JSONObject(issues);
-			fileWriter.write(json.toString());
-			fileWriter.close();
+			// Sample content
+			FileUtils.writeStringToFile(sourceFile, jsonString);
+
+			// Now copy from source to copy, the delete source.
+			FileUtils.copyFile(sourceFile, fileToCopy);
+			FileUtils.deleteQuietly(sourceFile);
 		}
 	}
 
