@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.me.thega.model.util.MetadataHelper;
 import uk.me.thega.model.util.SizeCalculator;
+import uk.me.thega.model.util.jira.JiraHelper;
 
 @Controller
 @RequestMapping(UrlMappings.ROOT_BROWSE)
@@ -124,6 +126,26 @@ public class BrowseController extends AbstractController {
 		}
 		model.addAttribute("resources", list);
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
+
+		// Do the jira!
+		final JiraHelper jiraHelper = new JiraHelper(getPathHelper());
+		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, product, version);
+		final Map<String, String> shortLog = new HashMap<String, String>();
+
+		// Take the first 5 off the change log and add to a short log
+		final List<String> tempList = new ArrayList<String>(changeLog.keySet());
+		Collections.sort(tempList);
+		for (int i = 1; i <= 5; i++) {
+			if (i <= tempList.size()) {
+				final String key = tempList.get(i);
+				shortLog.put(key, changeLog.get(key));
+				changeLog.remove(key);
+			}
+		}
+
+		model.addAttribute("jiraBaseUrl", jiraHelper.getJiraUrl());
+		model.addAttribute("jiraShortList", shortLog);
+		model.addAttribute("jiraLongList", changeLog);
 
 		return "browseVersion";
 	}

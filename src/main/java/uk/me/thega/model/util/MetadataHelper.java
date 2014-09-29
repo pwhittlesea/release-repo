@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 public final class MetadataHelper {
 
 	public static List<String> excludedFiles() {
-		return Arrays.asList(".discontinued", ".status");
+		return Arrays.asList(".discontinued", ".status", ".jira", ".jiraCache");
 	}
 
 	public static boolean isDiscontinued(final String path) {

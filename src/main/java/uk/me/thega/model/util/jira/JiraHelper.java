@@ -2,6 +2,7 @@ package uk.me.thega.model.util.jira;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,21 +62,42 @@ public class JiraHelper {
 		this.pathHelper = pathHelper;
 	}
 
+	public void cacheChangeLogForVersion(final String family, final String product, final String version) throws IOException {
+		if (isEnabled(family, product, version)) {
+			final Map<String, String> issues = getChangeLogForVersion(family, product, version);
+			final String path = getJiraCachePath(family, product, version);
+
+			// replace file
+			final File outputFile = new File(path);
+			outputFile.delete();
+			outputFile.createNewFile();
+
+			// write cache
+			final FileWriter fileWriter = new FileWriter(outputFile, false);
+			final JSONObject json = new JSONObject(issues);
+			fileWriter.write(json.toString());
+			fileWriter.close();
+		}
+	}
+
 	public Map<String, String> getCachedChangeLogForVersion(final String family, final String product, final String version) {
 		final Map<String, String> map = new HashMap<String, String>();
 		if (isEnabled(family, product, version)) {
-			final File cacheFile = new File(pathHelper.getVersionPath(family, product, version) + File.separator + ".jiraCache");
+			final File cacheFile = new File(getJiraCachePath(family, product, version));
 			FileInputStream fis = null;
 			try {
 				fis = new FileInputStream(cacheFile);
 				final byte[] data = new byte[(int) cacheFile.length()];
 				fis.read(data);
-				final String content = new String(data, "UTF-8");
 				fis.close();
-				final JSONObject json = new JSONObject(content);
-				final Iterator<?> keys = json.keys();
+
+				// Extract the cached JSON
+				final JSONObject json = new JSONObject(new String(data, "UTF-8"));
+
+				@SuppressWarnings("unchecked")
+				final Iterator<String> keys = json.keys();
 				while (keys.hasNext()) {
-					final String key = (String) keys.next();
+					final String key = keys.next();
 					map.put(key, (String) json.get(key));
 				}
 			} catch (final IOException e) {
@@ -157,6 +179,10 @@ public class JiraHelper {
 		final Promise<Issue> realIssueFutureResult = restClient.getIssueClient().getIssue(issue.getKey());
 		final Issue realIssue = realIssueFutureResult.get();
 		return realIssue.getSummary();
+	}
+
+	private String getJiraCachePath(final String family, final String product, final String version) {
+		return pathHelper.getVersionPath(family, product, version) + File.separator + ".jiraCache";
 	}
 
 	private String getJiraConfigFromLocation(final boolean canFail, final String path) throws IOException {

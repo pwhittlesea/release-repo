@@ -9,6 +9,8 @@
 			</Pattern>
 		</layout>
 	</appender>
+	
+	<logger name="org.springframework.web.servlet" level="WARN" />
 
 	<root level="debug">
 		<appender-ref ref="STDOUT" />
