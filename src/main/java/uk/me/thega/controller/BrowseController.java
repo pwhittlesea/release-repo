@@ -24,8 +24,6 @@ import uk.me.thega.model.util.SizeCalculator;
 @RequestMapping(UrlMappings.ROOT_BROWSE)
 public class BrowseController extends AbstractController {
 
-	private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
-
 	@RequestMapping(value = UrlMappings.FAMILY, method = RequestMethod.GET)
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
 		populateFamilyGet(family, model);
@@ -96,6 +94,7 @@ public class BrowseController extends AbstractController {
 	public String browseVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
 		populateVersionGet(family, product, version, model);
 
+		final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
 		final List<String[]> list = new ArrayList<String[]>();
 
 		final List<File> resources;
