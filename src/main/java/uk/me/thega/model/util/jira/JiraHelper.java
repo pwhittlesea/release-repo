@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.me.thega.model.util.PathHelper;
 
@@ -31,6 +33,9 @@ import com.atlassian.util.concurrent.Promise;
  * 
  */
 public class JiraHelper {
+
+	/** The logger. */
+	private static final Logger logger = LoggerFactory.getLogger(JiraHelper.class);
 
 	/** Helper for path resolution. */
 	private final PathHelper pathHelper;
@@ -90,6 +95,11 @@ public class JiraHelper {
 
 	public boolean isEnabled() {
 		final File conf = new File(pathHelper.getRepositoryPath() + File.separator + ".jira");
+		return conf.isFile();
+	}
+
+	public boolean isEnabled(final String family, final String product, final String version) {
+		final File conf = new File(pathHelper.getVersionPath(family, product, version) + File.separator + ".jira");
 		return conf.isFile();
 	}
 
@@ -155,6 +165,7 @@ public class JiraHelper {
 	}
 
 	private SearchResult runJQL(final String jql) throws URISyntaxException, IOException, InterruptedException, ExecutionException {
+		logger.trace("JiraHelper: running jql [{}]", jql);
 		final JiraRestClient restClient = getRestClient();
 		final Promise<SearchResult> futureResult = restClient.getSearchClient().searchJql(jql);
 		return futureResult.get();
