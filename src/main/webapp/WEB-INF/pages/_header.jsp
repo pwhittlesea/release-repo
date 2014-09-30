@@ -39,6 +39,9 @@
             <li><a href="${contextPath}/">Home</a></li>
             <li><a href="${contextPath}/browse">Browse</a></li>
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="http://github.com/pwhittlesea"><small>Made by <strong>@pwhittlesea</strong></small></a></li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>

@@ -4,16 +4,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.me.thega</groupId>
-	<artifactId>xmlserver</artifactId>
+	<artifactId>release-repo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>XML Server</name>
-	<description>Taggable XML server</description>
+	<name>Release Repository</name>
+	<description>Web Application for publishing a file system repository of Installers via HTTP.</description>
 
 	<properties>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<jdk.version>1.6</jdk.version>
 	</properties>
+	
+	<developers>
+		<developer>
+			<name>Phillip Whittlesea</name>
+			<organizationUrl>http://github.com/pwhittlesea</organizationUrl>
+		</developer>
+	</developers>
 
 	<dependencies>
 		<dependency>
