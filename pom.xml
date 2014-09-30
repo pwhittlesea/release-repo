@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.me.thega</groupId>
 	<artifactId>release-repo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>war</packaging>
 	<name>Release Repository</name>
 	<description>Web Application for publishing a file system repository of Installers via HTTP.</description>
