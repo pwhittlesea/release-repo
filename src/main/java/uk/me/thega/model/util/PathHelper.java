@@ -17,23 +17,23 @@ public class PathHelper {
 		this.basePath = basePath;
 	}
 
-	public String getFamilyPath(final String name) {
-		return getRepositoryPath() + File.separator + name;
+	public String getFamilyPath(final String family) {
+		return getRepositoryPath() + File.separator + family;
 	}
 
-	public String getProductPath(final String family, final String name) {
-		return getFamilyPath(family) + File.separator + name;
+	public String getProductPath(final String family, final String product) {
+		return getFamilyPath(family) + File.separator + product;
 	}
 
 	public String getRepositoryPath() {
 		return basePath;
 	}
 
-	public String getResourcePath(final String family, final String product, final String version, final String name) {
-		return getVersionPath(family, product, version) + File.separator + name;
+	public String getResourcePath(final String family, final String product, final String version, final String resource) {
+		return getVersionPath(family, product, version) + File.separator + resource;
 	}
 
-	public String getVersionPath(final String family, final String product, final String name) {
-		return getProductPath(family, product) + File.separator + name;
+	public String getVersionPath(final String family, final String product, final String version) {
+		return getProductPath(family, product) + File.separator + version;
 	}
 }

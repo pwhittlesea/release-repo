@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import uk.me.thega.model.util.PathHelper;
 import uk.me.thega.model.util.RepositoryFileSystem;
 import uk.me.thega.model.util.jira.JiraHelper;
 
@@ -29,7 +28,10 @@ public class Scheduler {
 	private final long MIN = 1000 * 60;
 
 	@Autowired
-	private PathHelper pathHelper;
+	private RepositoryFileSystem fileSystem;
+
+	@Autowired
+	private JiraHelper jiraHelper;
 
 	/**
 	 * Run Jira caching every 15 mins.
@@ -37,8 +39,6 @@ public class Scheduler {
 	@Scheduled(fixedDelay = MIN * 15)
 	public void runJiraCache() {
 		logger.debug("Scheduler: Running Jira Caching task");
-		final JiraHelper jiraHelper = new JiraHelper(pathHelper);
-		final RepositoryFileSystem fileSystem = new RepositoryFileSystem(pathHelper);
 		try {
 			for (final File familyFile : fileSystem.families()) {
 				final String family = familyFile.getName();

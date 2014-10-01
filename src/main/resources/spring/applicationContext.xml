@@ -34,6 +34,13 @@
 		class="uk.me.thega.model.util.PathHelper">
 		<constructor-arg ref="repositoryPath" />
 	</bean>
+	
+	<bean
+		id="jiraHelper"
+		class="uk.me.thega.model.util.jira.JiraHelper"
+		destroy-method="close">
+		<constructor-arg ref="pathHelper" />
+	</bean>
 
 	<bean
 		id="repositoryFileSystem"

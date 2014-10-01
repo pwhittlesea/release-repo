@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,9 @@ import uk.me.thega.model.util.jira.JiraHelper;
 @Controller
 @RequestMapping(UrlMappings.ROOT_BROWSE)
 public class BrowseController extends AbstractController {
+
+	@Autowired
+	private JiraHelper jiraHelper;
 
 	@RequestMapping(value = UrlMappings.FAMILY, method = RequestMethod.GET)
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
@@ -128,7 +132,6 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
 
 		// Do the jira!
-		final JiraHelper jiraHelper = new JiraHelper(getPathHelper());
 		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, product, version);
 		final Map<String, String> shortLog = new HashMap<String, String>();
 

@@ -13,6 +13,10 @@
 	</appender>
 
 	<logger
+		name="com.atlassian.jira.rest.client.internal.async"
+		level="error" />
+
+	<logger
 		name="org.springframework.web.servlet"
 		level="WARN" />
 

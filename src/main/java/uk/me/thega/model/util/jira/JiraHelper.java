@@ -19,11 +19,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.me.thega.model.util.PathHelper;
 
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.atlassian.util.concurrent.Promise;
 
@@ -82,6 +82,14 @@ public class JiraHelper {
 		}
 	}
 
+	/**
+	 * Tear down.
+	 */
+	public void close() {
+		logger.debug("Shutting down JiraHelper");
+		IOUtils.closeQuietly(restClient);
+	}
+
 	public Map<String, String> getCachedChangeLogForVersion(final String family, final String product, final String version) {
 		final Map<String, String> map = new HashMap<String, String>();
 		if (isEnabled(family, product, version)) {
@@ -132,10 +140,7 @@ public class JiraHelper {
 		final Map<String, String> keyToInfo = new HashMap<String, String>();
 
 		try {
-			final String familyJql = getJiraConfigFromLocation(false, pathHelper.getFamilyPath(family));
-			final String productJql = getJiraConfigFromLocation(false, pathHelper.getProductPath(family, product));
-			final String versionJql = getJiraConfigFromLocation(false, pathHelper.getVersionPath(family, product, version));
-			final SearchResult searchResult = runJQL(familyJql + " " + productJql + " " + versionJql);
+			final SearchResult searchResult = runJQL(getJQLForVersion(family, product, version));
 
 			for (final BasicIssue issue : searchResult.getIssues()) {
 				keyToInfo.put(issue.getKey(), getChangeLogForIssue(issue));
@@ -149,6 +154,18 @@ public class JiraHelper {
 	public String getJiraUrl() throws IOException {
 		final String[] jiraConfiguration = getJiraConfiguration();
 		return jiraConfiguration[0].trim();
+	}
+
+	public String getJQLForFamily(final String family) throws IOException {
+		return getJiraConfigFromLocation(false, pathHelper.getFamilyPath(family));
+	}
+
+	public String getJQLForProduct(final String family, final String product) throws IOException {
+		return getJQLForFamily(family) + " " + getJiraConfigFromLocation(false, pathHelper.getProductPath(family, product));
+	}
+
+	public String getJQLForVersion(final String family, final String product, final String version) throws IOException {
+		return getJQLForProduct(family, product) + " " + getJiraConfigFromLocation(false, pathHelper.getVersionPath(family, product, version));
 	}
 
 	public boolean isEnabled() {
@@ -227,7 +244,7 @@ public class JiraHelper {
 	}
 
 	private SearchResult runJQL(final String jql) throws URISyntaxException, IOException, InterruptedException, ExecutionException {
-		logger.trace("JiraHelper: running jql [{}]", jql);
+		logger.debug("JiraHelper: running jql [{}]", jql);
 		final JiraRestClient restClient = getRestClient();
 		final Promise<SearchResult> futureResult = restClient.getSearchClient().searchJql(jql);
 		return futureResult.get();
