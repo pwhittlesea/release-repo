@@ -178,6 +178,11 @@ public class JiraHelper {
 		return conf.isFile();
 	}
 
+	public boolean isJiraLocked() throws IOException {
+		final String[] jiraConfiguration = getJiraConfiguration();
+		return Boolean.parseBoolean(jiraConfiguration[3].trim());
+	}
+
 	/**
 	 * Get the change log for a given {@link BasicIssue}.
 	 * 

@@ -150,6 +150,11 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("jiraShortList", shortLog);
 		model.addAttribute("jiraLongList", changeLog);
 
+		final String parentJQL = jiraHelper.getJQLForProduct(family, product);
+		final String childJQL = jiraHelper.getJQLForVersion(family, product, version);
+		model.addAttribute("parentJQL", parentJQL.trim());
+		model.addAttribute("childJQL", childJQL.replace(parentJQL, "").trim());
+
 		return "browseVersion";
 	}
 

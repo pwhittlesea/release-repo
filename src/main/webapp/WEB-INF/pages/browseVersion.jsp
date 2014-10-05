@@ -13,9 +13,41 @@
             <div class="panel panel-default">
               <div class="panel-heading">
                 ${product} ${version}
-                <c:if test="${resources.size() > 1}">
-                  <a href="${contextPath}/download/${family}/${product}/${version}.zip" class="btn btn-primary btn-xs pull-right">Download All</a>
-                </c:if>
+                <div class="btn-group pull-right">
+                  <c:if test="${resources.size() > 1}">
+                    <a href="${contextPath}/download/${family}/${product}/${version}.zip" class="btn btn-primary btn-xs">Download All</a>
+                  </c:if>
+                  <!-- Button trigger modal -->
+                  <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#jqlModal">
+                    <span class="glyphicon glyphicon-cog"></span>
+                  </button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="jqlModal" tabindex="-1" role="dialog" aria-labelledby="jqlModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title" id="jqlModalLabel">Modal title</h4>
+                      </div>
+                      <form role="form" id="jql">
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <div class="input-group">
+                              <div class="input-group-addon">${parentJQL}</div>
+                              <input type="text" class="form-control" id="changelog-text" placeholder="JQL Script" value="${childJQL}"/>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div> <!-- /.modal -->
+
               </div>
               <div class="panel-body">
                 <p>
@@ -70,4 +102,24 @@
       </div>
 
     </div><!-- /.container -->
+    <script type="text/javascript">
+      $( "#jql" ).submit(function( event ) {
+        event.preventDefault();
+        $.ajax({
+          type: "PUT",
+          url: "${contextPath}/upload/${family}/${product}/${version}/.jira",
+          data: $("#changelog-text").val()
+        })
+        .fail(function( xhr ) {
+          $("#jql").addClass('has-error');
+          alert( "Request failed: " + xhr.status + " -> " + xhr.statusText );
+          console.log(xhr);
+          return false;
+        })
+        .done(function( msg ) {
+          $("#jqlModal").modal("close");
+          return true;
+        });
+      });
+    </script>
 <%@ include file="_footer.jsp" %>
