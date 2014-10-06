@@ -1,8 +1,8 @@
 # release-repo
 
 ## Build Status
-develop: https://travis-ci.org/pwhittlesea/release-repo.svg?branch=develop
-master: https://travis-ci.org/pwhittlesea/release-repo.svg?branch=master
+* develop: ![Develop build icon](https://travis-ci.org/pwhittlesea/release-repo.svg?branch=develop)
+* master: ![Master build icon](https://travis-ci.org/pwhittlesea/release-repo.svg?branch=develop)
 
 ## Overview
 A app for publishing application installers via HTTP
