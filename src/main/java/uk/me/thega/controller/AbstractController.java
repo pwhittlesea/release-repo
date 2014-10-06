@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.me.thega.controller.exception.AccessDeniedException;
+import uk.me.thega.model.repository.Repository;
 import uk.me.thega.model.util.PathHelper;
-import uk.me.thega.model.util.RepositoryFileSystem;
 
 public abstract class AbstractController {
 
@@ -28,7 +28,7 @@ public abstract class AbstractController {
 	private PathHelper pathHelper;
 
 	@Autowired
-	private RepositoryFileSystem fileSystemUtil;
+	private Repository repository;
 
 	private String productName = null;
 
@@ -52,21 +52,21 @@ public abstract class AbstractController {
 	}
 
 	/**
-	 * Get the util for file system interaction.
-	 * 
-	 * @return the fileSystemUtil
-	 */
-	protected RepositoryFileSystem getFileSystemUtil() {
-		return fileSystemUtil;
-	}
-
-	/**
 	 * Get the path helper
 	 * 
 	 * @return the pathHelper
 	 */
 	protected PathHelper getPathHelper() {
 		return pathHelper;
+	}
+
+	/**
+	 * Get the repository object.
+	 * 
+	 * @return the respository
+	 */
+	protected Repository getRepository() {
+		return repository;
 	}
 
 	protected void populateGet(final ModelMap model) {
@@ -76,12 +76,12 @@ public abstract class AbstractController {
 	}
 
 	/**
-	 * Set the model for file system interaction.
+	 * Set the repository.
 	 * 
-	 * @param fileSystemUtil the fileSystemUtil to set
+	 * @param repository the repository to set
 	 */
-	void setFileSystemUtil(final RepositoryFileSystem fileSystemUtil) {
-		this.fileSystemUtil = fileSystemUtil;
+	void setFileSystemUtil(final Repository repository) {
+		this.repository = repository;
 	}
 
 	/**

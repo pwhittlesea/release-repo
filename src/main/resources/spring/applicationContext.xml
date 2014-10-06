@@ -44,7 +44,7 @@
 
 	<bean
 		id="repositoryFileSystem"
-		class="uk.me.thega.model.util.RepositoryFileSystem">
+		class="uk.me.thega.model.repository.file.RepositoryFileSystem">
 		<constructor-arg ref="pathHelper" />
 	</bean>
 

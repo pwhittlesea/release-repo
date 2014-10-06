@@ -1,6 +1,5 @@
 package uk.me.thega.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +18,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import uk.me.thega.model.repository.Family;
+import uk.me.thega.model.repository.Product;
+import uk.me.thega.model.repository.Resource;
+import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.MetadataHelper;
 import uk.me.thega.model.util.SizeCalculator;
 import uk.me.thega.model.util.jira.JiraHelper;
@@ -36,10 +39,10 @@ public class BrowseController extends AbstractController {
 
 		final List<String> list = new ArrayList<String>();
 		final Map<String, Boolean> isDiscontinued = new HashMap<String, Boolean>();
-		for (final File product : getFileSystemUtil().products(family)) {
+		for (final Product product : getRepository().products(family)) {
 			final String prodName = product.getName();
 			list.add(prodName);
-			isDiscontinued.put(prodName, MetadataHelper.isDiscontinued(product.getPath()));
+			isDiscontinued.put(prodName, product.isDiscontinued());
 		}
 		model.addAttribute("products", list);
 		model.addAttribute("discontinued", isDiscontinued);
@@ -55,7 +58,7 @@ public class BrowseController extends AbstractController {
 		final List<String> rightList = new ArrayList<String>();
 		int i = 0;
 
-		for (final File family : getFileSystemUtil().families()) {
+		for (final Family family : getRepository().families()) {
 			final String name = family.getName();
 			if ((i++ % 2) == 0) {
 				leftList.add(name);
@@ -75,19 +78,19 @@ public class BrowseController extends AbstractController {
 
 		final List<String> list = new ArrayList<String>();
 
-		final List<File> versions;
+		final List<Version> versions;
 		if (product.equals("all")) {
-			versions = getFileSystemUtil().allVersions(family);
+			versions = getRepository().allVersions(family);
 		} else {
-			versions = getFileSystemUtil().versions(family, product);
+			versions = getRepository().versions(family, product);
 		}
 
 		final Map<String, String> statuses = new HashMap<String, String>();
-		for (final File version : versions) {
+		for (final Version version : versions) {
 			final String name = version.getName();
-			if (version.isDirectory() && !list.contains(name)) {
+			if (!list.contains(name)) {
 				list.add(name);
-				statuses.put(name, MetadataHelper.status(version.getPath()));
+				statuses.put(name, version.status());
 			}
 		}
 		model.addAttribute("versions", list);
@@ -103,16 +106,16 @@ public class BrowseController extends AbstractController {
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
 		final List<String[]> list = new ArrayList<String[]>();
 
-		final List<File> resources;
+		final List<Resource> resources;
 		if (product.equals("all")) {
-			resources = getFileSystemUtil().allResources(family, version);
+			resources = getRepository().allResources(family, version);
 		} else {
-			resources = getFileSystemUtil().resources(family, product, version);
+			resources = getRepository().resources(family, product, version);
 		}
 
 		long totalLen = 0;
 		final List<String> excluded = MetadataHelper.excludedFiles();
-		for (final File resource : resources) {
+		for (final Resource resource : resources) {
 			if (!excluded.contains(resource.getName()) && resource.isFile()) {
 				final long len = resource.length();
 				final long lastModified = resource.lastModified();
