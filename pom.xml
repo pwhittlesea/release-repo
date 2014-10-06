@@ -22,6 +22,21 @@
 		</developer>
 	</developers>
 
+	<repositories>
+		<repository>
+			<id>atlassian-public</id>
+			<url>https://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
