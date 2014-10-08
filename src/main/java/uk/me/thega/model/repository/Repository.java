@@ -19,24 +19,24 @@ public interface Repository {
 	List<Family> families() throws NotFoundException;
 
 	/**
-	 * We have a family, version and file name but do not know which product the file was in.
+	 * We have a family, version and file name but do not know which application the file was in.
 	 * 
-	 * Lets hope noone puts two files by the same name in two products otherwise this will get nasty.
+	 * Lets hope noone puts two files by the same name in two applications otherwise this will get nasty.
 	 * 
-	 * @param family the product family.
-	 * @param version the product version.
+	 * @param family the application family.
+	 * @param version the application version.
 	 * @param name the name of the resource to find.
 	 * @return the found resource.
 	 * @throws NotFoundException if we cannot find the resource.
 	 */
 	Resource findResource(String family, String version, String name) throws NotFoundException;
 
-	Resource getResource(String family, String product, String version, String name) throws NotFoundException;
+	Resource getResource(String family, String application, String version, String name) throws NotFoundException;
 
-	List<Product> products(String family) throws NotFoundException;
+	List<Application> applications(String family) throws NotFoundException;
 
-	List<Resource> resources(String family, String product, String version) throws NotFoundException;
+	List<Resource> resources(String family, String application, String version) throws NotFoundException;
 
-	List<Version> versions(String family, String product) throws NotFoundException;
+	List<Version> versions(String family, String application) throws NotFoundException;
 
 }

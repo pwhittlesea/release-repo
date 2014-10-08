@@ -40,11 +40,11 @@ public class UploadController extends AbstractController {
 
 	@RequestMapping(value = UrlMappings.FILE_PATH, method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void uploadPost(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, @RequestParam("file") final MultipartFile file) throws IOException {
-		createParentFolder(family, product, version);
+	public void uploadPost(@PathVariable final String family, @PathVariable final String application, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, @RequestParam("file") final MultipartFile file) throws IOException {
+		createParentFolder(family, application, version);
 
 		// Create the file on server
-		final String serverPath = getPathHelper().getResourcePath(family, product, version, fileName + '.' + extension);
+		final String serverPath = getPathHelper().getResourcePath(family, application, version, fileName + '.' + extension);
 		checkNotBanned(serverPath);
 
 		final File serverFile = new File(serverPath);
@@ -55,13 +55,13 @@ public class UploadController extends AbstractController {
 
 	@RequestMapping(value = UrlMappings.FILE_PATH, method = RequestMethod.PUT)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void uploadPut(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+	public void uploadPut(@PathVariable final String family, @PathVariable final String application, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 		final InputStream inputStream = request.getInputStream();
 		if (inputStream != null) {
-			createParentFolder(family, product, version);
+			createParentFolder(family, application, version);
 
 			// Create the file on server
-			final String serverPath = getPathHelper().getResourcePath(family, product, version, fileName + '.' + extension);
+			final String serverPath = getPathHelper().getResourcePath(family, application, version, fileName + '.' + extension);
 			checkNotBanned(serverPath);
 
 			final File serverFile = new File(serverPath);
@@ -81,8 +81,8 @@ public class UploadController extends AbstractController {
 		}
 	}
 
-	private void createParentFolder(final String family, final String product, final String version) {
-		final File dir = new File(getPathHelper().getVersionPath(family, product, version));
+	private void createParentFolder(final String family, final String application, final String version) {
+		final File dir = new File(getPathHelper().getVersionPath(family, application, version));
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}

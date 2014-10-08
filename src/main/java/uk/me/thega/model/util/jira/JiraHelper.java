@@ -32,7 +32,7 @@ import com.atlassian.util.concurrent.Promise;
  * 
  * Config should be in the format URL,user,pass in a .jira file.
  * 
- * JQL queries are built by fetching JQL from .jira files in families, products and versions in that order.
+ * JQL queries are built by fetching JQL from .jira files in families, applications and versions in that order.
  * 
  * @author pwhittlesea
  * 
@@ -61,12 +61,12 @@ public class JiraHelper {
 		this.pathHelper = pathHelper;
 	}
 
-	public void cacheChangeLogForVersion(final String family, final String product, final String version) throws IOException {
-		if (isEnabled(family, product, version)) {
-			final Map<String, String> issues = getChangeLogForVersion(family, product, version);
+	public void cacheChangeLogForVersion(final String family, final String application, final String version) throws IOException {
+		if (isEnabled(family, application, version)) {
+			final Map<String, String> issues = getChangeLogForVersion(family, application, version);
 			final JSONObject json = new JSONObject(issues);
 			final String jsonString = json.toString();
-			final String path = getJiraCachePath(family, product, version);
+			final String path = getJiraCachePath(family, application, version);
 
 			// Create some files here
 			logger.trace("JiraHelper: Caching in {}", path);
@@ -90,10 +90,10 @@ public class JiraHelper {
 		IOUtils.closeQuietly(restClient);
 	}
 
-	public Map<String, String> getCachedChangeLogForVersion(final String family, final String product, final String version) {
+	public Map<String, String> getCachedChangeLogForVersion(final String family, final String application, final String version) {
 		final Map<String, String> map = new HashMap<String, String>();
-		if (isEnabled(family, product, version)) {
-			final File cacheFile = new File(getJiraCachePath(family, product, version));
+		if (isEnabled(family, application, version)) {
+			final File cacheFile = new File(getJiraCachePath(family, application, version));
 			FileInputStream fis = null;
 			try {
 				fis = new FileInputStream(cacheFile);
@@ -123,24 +123,24 @@ public class JiraHelper {
 	}
 
 	/**
-	 * Get the change log for a version of a product.
+	 * Get the change log for a version of a application.
 	 * 
 	 * This will be in a line separated list.
 	 * 
 	 * @param family
-	 *            the family of the product.
-	 * @param product
-	 *            the product to get the change log for.
+	 *            the family of the application.
+	 * @param application
+	 *            the application to get the change log for.
 	 * @param version
-	 *            the version of the product.
+	 *            the version of the application.
 	 * @return the change log.
 	 */
-	public Map<String, String> getChangeLogForVersion(final String family, final String product, final String version) {
+	public Map<String, String> getChangeLogForVersion(final String family, final String application, final String version) {
 		// This seems a complex data type for storage, it may come in handy later.
 		final Map<String, String> keyToInfo = new HashMap<String, String>();
 
 		try {
-			final SearchResult searchResult = runJQL(getJQLForVersion(family, product, version));
+			final SearchResult searchResult = runJQL(getJQLForVersion(family, application, version));
 
 			for (final BasicIssue issue : searchResult.getIssues()) {
 				keyToInfo.put(issue.getKey(), getChangeLogForIssue(issue));
@@ -160,12 +160,12 @@ public class JiraHelper {
 		return getJiraConfigFromLocation(false, pathHelper.getFamilyPath(family));
 	}
 
-	public String getJQLForProduct(final String family, final String product) throws IOException {
-		return getJQLForFamily(family) + " " + getJiraConfigFromLocation(false, pathHelper.getProductPath(family, product));
+	public String getJQLForApplication(final String family, final String application) throws IOException {
+		return getJQLForFamily(family) + " " + getJiraConfigFromLocation(false, pathHelper.getApplicationPath(family, application));
 	}
 
-	public String getJQLForVersion(final String family, final String product, final String version) throws IOException {
-		return getJQLForProduct(family, product) + " " + getJiraConfigFromLocation(false, pathHelper.getVersionPath(family, product, version));
+	public String getJQLForVersion(final String family, final String application, final String version) throws IOException {
+		return getJQLForApplication(family, application) + " " + getJiraConfigFromLocation(false, pathHelper.getVersionPath(family, application, version));
 	}
 
 	public boolean isEnabled() {
@@ -173,8 +173,8 @@ public class JiraHelper {
 		return conf.isFile();
 	}
 
-	public boolean isEnabled(final String family, final String product, final String version) {
-		final File conf = new File(pathHelper.getVersionPath(family, product, version) + File.separator + ".jira");
+	public boolean isEnabled(final String family, final String application, final String version) {
+		final File conf = new File(pathHelper.getVersionPath(family, application, version) + File.separator + ".jira");
 		return conf.isFile();
 	}
 
@@ -205,8 +205,8 @@ public class JiraHelper {
 		return realIssue.getSummary();
 	}
 
-	private String getJiraCachePath(final String family, final String product, final String version) {
-		return pathHelper.getVersionPath(family, product, version) + File.separator + ".jiraCache";
+	private String getJiraCachePath(final String family, final String application, final String version) {
+		return pathHelper.getVersionPath(family, application, version) + File.separator + ".jiraCache";
 	}
 
 	private String getJiraConfigFromLocation(final boolean canFail, final String path) throws IOException {

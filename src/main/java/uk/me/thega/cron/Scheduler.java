@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import uk.me.thega.model.repository.Family;
-import uk.me.thega.model.repository.Product;
+import uk.me.thega.model.repository.Application;
 import uk.me.thega.model.repository.Repository;
 import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.jira.JiraHelper;
@@ -44,10 +44,10 @@ public class Scheduler {
 		try {
 			for (final Family family : repository.families()) {
 				final String familyName = family.getName();
-				for (final Product product : repository.products(familyName)) {
-					final String productName = product.getName();
-					for (final Version version : repository.versions(familyName, productName)) {
-						jiraHelper.cacheChangeLogForVersion(familyName, productName, version.getName());
+				for (final Application application : repository.applications(familyName)) {
+					final String applicationName = application.getName();
+					for (final Version version : repository.versions(familyName, applicationName)) {
+						jiraHelper.cacheChangeLogForVersion(familyName, applicationName, version.getName());
 					}
 				}
 			}

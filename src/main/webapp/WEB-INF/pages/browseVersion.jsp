@@ -3,7 +3,7 @@
       <ol class="breadcrumb">
         <li><a href="${contextPath}/browse"><span class="glyphicon glyphicon-home"></span></a></li>
         <li><a href="${contextPath}/browse/${family}.html">${family}</a></li>
-        <li><a href="${contextPath}/browse/${family}/${product}.html">${product}</a></li>
+        <li><a href="${contextPath}/browse/${family}/${application}.html">${application}</a></li>
         <li class="active">${version}</li>
       </ol>
 
@@ -12,10 +12,10 @@
           <div class="col-md-12">
             <div class="panel panel-default">
               <div class="panel-heading">
-                ${product} ${version}
+                ${application} ${version}
                 <div class="btn-group pull-right">
                   <c:if test="${resources.size() > 1}">
-                    <a href="${contextPath}/download/${family}/${product}/${version}.zip" class="btn btn-primary btn-xs">Download All</a>
+                    <a href="${contextPath}/download/${family}/${application}/${version}.zip" class="btn btn-primary btn-xs">Download All</a>
                   </c:if>
                   <!-- Button trigger modal -->
                   <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#jqlModal">
@@ -85,7 +85,7 @@
                       <tr>
                         <td>
                           <span class="glyphicon glyphicon-file"></span>
-                          <a href="${contextPath}/download/${family}/${product}/${version}/${resource[0]}">${resource[0]}</a>
+                          <a href="${contextPath}/download/${family}/${application}/${version}/${resource[0]}">${resource[0]}</a>
                         </td>
                         <td class="text-right">${resource[1]}</td>
                         <td class="text-right">${resource[2]}</td>
@@ -107,7 +107,7 @@
         event.preventDefault();
         $.ajax({
           type: "PUT",
-          url: "${contextPath}/upload/${family}/${product}/${version}/.jira",
+          url: "${contextPath}/upload/${family}/${application}/${version}/.jira",
           data: $("#changelog-text").val()
         })
         .fail(function( xhr ) {

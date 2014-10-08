@@ -23,12 +23,12 @@ import uk.me.thega.model.util.MetadataHelper;
 public class DownloadController extends AbstractController {
 
 	@RequestMapping(value = UrlMappings.FILE_PATH, method = RequestMethod.GET)
-	public void downloadResourceGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
+	public void downloadResourceGet(@PathVariable final String family, @PathVariable final String application, @PathVariable final String version, @PathVariable final String fileName, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
 		final Resource download;
-		if (product.equals("all")) {
+		if (application.equals("all")) {
 			download = getRepository().findResource(family, version, fileName + '.' + extension);
 		} else {
-			download = getRepository().getResource(family, product, version, fileName + '.' + extension);
+			download = getRepository().getResource(family, application, version, fileName + '.' + extension);
 		}
 		final InputStream is = download.getInputStream();
 		IOUtils.copy(is, response.getOutputStream());
@@ -37,12 +37,12 @@ public class DownloadController extends AbstractController {
 	}
 
 	@RequestMapping(value = UrlMappings.VERSION_DOWNLOAD, method = RequestMethod.GET)
-	public void downloadVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
+	public void downloadVersionGet(@PathVariable final String family, @PathVariable final String application, @PathVariable final String version, @PathVariable final String extension, final HttpServletResponse response) throws IOException {
 		final List<Resource> download;
-		if (product.equals("all")) {
+		if (application.equals("all")) {
 			download = getRepository().allResources(family, version);
 		} else {
-			download = getRepository().resources(family, product, version);
+			download = getRepository().resources(family, application, version);
 		}
 
 		final ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());

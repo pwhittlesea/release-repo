@@ -30,7 +30,7 @@ public abstract class AbstractController {
 	@Autowired
 	private Repository repository;
 
-	private String productName = null;
+	private String applicationName = null;
 
 	private String companyName = null;
 
@@ -71,7 +71,7 @@ public abstract class AbstractController {
 
 	protected void populateGet(final ModelMap model) {
 		initNamesFromConfig();
-		model.addAttribute("productName", productName);
+		model.addAttribute("applicationName", applicationName);
 		model.addAttribute("company", companyName);
 	}
 
@@ -94,12 +94,12 @@ public abstract class AbstractController {
 	}
 
 	/**
-	 * If the names of the product are not initialised then fetch them from the config.
+	 * If the names of the application are not initialised then fetch them from the config.
 	 */
 	private void initNamesFromConfig() {
-		if ((productName == null) || (companyName == null)) {
+		if ((applicationName == null) || (companyName == null)) {
 			// Defaults
-			productName = "Product Name";
+			applicationName = "Application Name";
 			companyName = "Company Name";
 
 			try {
@@ -108,7 +108,7 @@ public abstract class AbstractController {
 				final String[] config = configContent.split(",");
 
 				if (config.length == 2) {
-					productName = config[0];
+					applicationName = config[0];
 					companyName = config[1];
 				}
 			} catch (final IOException e) {

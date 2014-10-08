@@ -2,19 +2,19 @@ package uk.me.thega.model.repository.file;
 
 import java.io.File;
 
-import uk.me.thega.model.repository.Product;
+import uk.me.thega.model.repository.Application;
 import uk.me.thega.model.util.MetadataHelper;
 
-public class FileProduct implements Product {
+public class FileApplication implements Application {
 
 	private final File file;
 
-	public FileProduct(final File file) {
+	public FileApplication(final File file) {
 		this.file = file;
 	}
 
 	/**
-	 * Get the file this product is wrapping.
+	 * Get the file this application is wrapping.
 	 * 
 	 * @return the file.
 	 * @deprecated accessor methods should be used instead.
@@ -25,7 +25,7 @@ public class FileProduct implements Product {
 	}
 
 	/**
-	 * Get the name of this product.
+	 * Get the name of this application.
 	 * 
 	 * @return the name.
 	 */

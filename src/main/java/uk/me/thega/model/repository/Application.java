@@ -1,6 +1,6 @@
 package uk.me.thega.model.repository;
 
-public interface Product {
+public interface Application {
 
 	String getName();
 

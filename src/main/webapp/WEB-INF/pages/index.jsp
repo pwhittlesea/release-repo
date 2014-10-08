@@ -2,7 +2,7 @@
     <div class="container">
 
       <div class="main-page text-center">
-        <h1>Welcome to the ${company}<br>Product Repository</h1>
+        <h1>Welcome to the ${company}<br>Application Repository</h1>
         <p class="lead">Use the navigation provided above to view/edit or add to the server.</p>
       </div>
 

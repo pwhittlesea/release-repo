@@ -21,19 +21,19 @@ public class PathHelper {
 		return getRepositoryPath() + File.separator + family;
 	}
 
-	public String getProductPath(final String family, final String product) {
-		return getFamilyPath(family) + File.separator + product;
+	public String getApplicationPath(final String family, final String application) {
+		return getFamilyPath(family) + File.separator + application;
 	}
 
 	public String getRepositoryPath() {
 		return basePath;
 	}
 
-	public String getResourcePath(final String family, final String product, final String version, final String resource) {
-		return getVersionPath(family, product, version) + File.separator + resource;
+	public String getResourcePath(final String family, final String application, final String version, final String resource) {
+		return getVersionPath(family, application, version) + File.separator + resource;
 	}
 
-	public String getVersionPath(final String family, final String product, final String version) {
-		return getProductPath(family, product) + File.separator + version;
+	public String getVersionPath(final String family, final String application, final String version) {
+		return getApplicationPath(family, application) + File.separator + version;
 	}
 }

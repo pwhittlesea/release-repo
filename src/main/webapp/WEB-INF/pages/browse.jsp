@@ -7,7 +7,7 @@
       <div class="main-page">
         <div class="row">
           <div class="col-md-8 col-md-offset-2">
-            <p class="text-center lead">Select the product family</p>
+            <p class="text-center lead">Select the application family</p>
               <div class="row">
                 <div class="col-md-6">
                   <c:forEach items="${leftList}" var="family">

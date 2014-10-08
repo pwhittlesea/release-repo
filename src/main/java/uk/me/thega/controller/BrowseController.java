@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.me.thega.model.repository.Family;
-import uk.me.thega.model.repository.Product;
+import uk.me.thega.model.repository.Application;
 import uk.me.thega.model.repository.Resource;
 import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.MetadataHelper;
@@ -39,12 +39,12 @@ public class BrowseController extends AbstractController {
 
 		final List<String> list = new ArrayList<String>();
 		final Map<String, Boolean> isDiscontinued = new HashMap<String, Boolean>();
-		for (final Product product : getRepository().products(family)) {
-			final String prodName = product.getName();
+		for (final Application application : getRepository().applications(family)) {
+			final String prodName = application.getName();
 			list.add(prodName);
-			isDiscontinued.put(prodName, product.isDiscontinued());
+			isDiscontinued.put(prodName, application.isDiscontinued());
 		}
-		model.addAttribute("products", list);
+		model.addAttribute("applications", list);
 		model.addAttribute("discontinued", isDiscontinued);
 
 		return "browseFamily";
@@ -73,16 +73,16 @@ public class BrowseController extends AbstractController {
 	}
 
 	@RequestMapping(value = UrlMappings.PRODUCT, method = RequestMethod.GET)
-	public String browseProductGet(@PathVariable final String family, @PathVariable final String product, final ModelMap model) throws IOException {
-		populateProductGet(family, product, model);
+	public String browseApplicationGet(@PathVariable final String family, @PathVariable final String application, final ModelMap model) throws IOException {
+		populateApplicationGet(family, application, model);
 
 		final List<String> list = new ArrayList<String>();
 
 		final List<Version> versions;
-		if (product.equals("all")) {
+		if (application.equals("all")) {
 			versions = getRepository().allVersions(family);
 		} else {
-			versions = getRepository().versions(family, product);
+			versions = getRepository().versions(family, application);
 		}
 
 		final Map<String, String> statuses = new HashMap<String, String>();
@@ -96,21 +96,21 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("versions", list);
 		model.addAttribute("status", statuses);
 
-		return "browseProduct";
+		return "browseApplication";
 	}
 
 	@RequestMapping(value = UrlMappings.VERSION, method = RequestMethod.GET)
-	public String browseVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
-		populateVersionGet(family, product, version, model);
+	public String browseVersionGet(@PathVariable final String family, @PathVariable final String application, @PathVariable final String version, final ModelMap model) throws IOException {
+		populateVersionGet(family, application, version, model);
 
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
 		final List<String[]> list = new ArrayList<String[]>();
 
 		final List<Resource> resources;
-		if (product.equals("all")) {
+		if (application.equals("all")) {
 			resources = getRepository().allResources(family, version);
 		} else {
-			resources = getRepository().resources(family, product, version);
+			resources = getRepository().resources(family, application, version);
 		}
 
 		long totalLen = 0;
@@ -135,7 +135,7 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
 
 		// Do the jira!
-		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, product, version);
+		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, application, version);
 		final Map<String, String> shortLog = new HashMap<String, String>();
 
 		// Take the first 5 off the change log and add to a short log
@@ -153,8 +153,8 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("jiraShortList", shortLog);
 		model.addAttribute("jiraLongList", changeLog);
 
-		final String parentJQL = jiraHelper.getJQLForProduct(family, product);
-		final String childJQL = jiraHelper.getJQLForVersion(family, product, version);
+		final String parentJQL = jiraHelper.getJQLForApplication(family, application);
+		final String childJQL = jiraHelper.getJQLForVersion(family, application, version);
 		model.addAttribute("parentJQL", parentJQL.trim());
 		model.addAttribute("childJQL", childJQL.replace(parentJQL, "").trim());
 
@@ -166,13 +166,13 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("family", family);
 	}
 
-	private void populateProductGet(final String family, final String product, final ModelMap model) {
+	private void populateApplicationGet(final String family, final String application, final ModelMap model) {
 		populateFamilyGet(family, model);
-		model.addAttribute("product", product);
+		model.addAttribute("application", application);
 	}
 
-	private void populateVersionGet(final String family, final String product, final String version, final ModelMap model) {
-		populateProductGet(family, product, model);
+	private void populateVersionGet(final String family, final String application, final String version, final ModelMap model) {
+		populateApplicationGet(family, application, model);
 		model.addAttribute("version", version);
 	}
 }
