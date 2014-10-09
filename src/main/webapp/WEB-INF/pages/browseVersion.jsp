@@ -60,7 +60,7 @@
                 </p>
                 <c:if test="${jiraLongList.size() > 0}">
                   <p class="text-center">
-                    <button type="button" class="btn btn-link btn-xs" data-toggle="collapse" data-target="#more-items">Show More</button>
+                    <button id="more-button" type="button" class="btn btn-link btn-xs" data-toggle="collapse" data-target="#more-items">Show More</button>
                   </p>
                   <div id="more-items" class="collapse">
                     <p>
@@ -103,6 +103,11 @@
 
     </div><!-- /.container -->
     <script type="text/javascript">
+      $("#more-items").on('show.bs.collapse', function () {
+        $("#more-button").text('Show Less');
+      }).on('hide.bs.collapse', function () {
+        $("#more-button").text('Show More');
+      });
       $( "#jql" ).submit(function( event ) {
         event.preventDefault();
         $.ajax({
