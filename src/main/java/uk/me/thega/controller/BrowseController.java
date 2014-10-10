@@ -1,6 +1,5 @@
 package uk.me.thega.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,12 +11,17 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import uk.me.thega.model.repository.Family;
+import uk.me.thega.model.repository.Application;
+import uk.me.thega.model.repository.Resource;
+import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.MetadataHelper;
 import uk.me.thega.model.util.SizeCalculator;
 import uk.me.thega.model.util.jira.JiraHelper;
@@ -26,18 +30,21 @@ import uk.me.thega.model.util.jira.JiraHelper;
 @RequestMapping(UrlMappings.ROOT_BROWSE)
 public class BrowseController extends AbstractController {
 
+	@Autowired
+	private JiraHelper jiraHelper;
+
 	@RequestMapping(value = UrlMappings.FAMILY, method = RequestMethod.GET)
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
 		populateFamilyGet(family, model);
 
 		final List<String> list = new ArrayList<String>();
 		final Map<String, Boolean> isDiscontinued = new HashMap<String, Boolean>();
-		for (final File product : getFileSystemUtil().products(family)) {
-			final String prodName = product.getName();
+		for (final Application application : getRepository().applications(family)) {
+			final String prodName = application.getName();
 			list.add(prodName);
-			isDiscontinued.put(prodName, MetadataHelper.isDiscontinued(product.getPath()));
+			isDiscontinued.put(prodName, application.isDiscontinued());
 		}
-		model.addAttribute("products", list);
+		model.addAttribute("applications", list);
 		model.addAttribute("discontinued", isDiscontinued);
 
 		return "browseFamily";
@@ -51,7 +58,7 @@ public class BrowseController extends AbstractController {
 		final List<String> rightList = new ArrayList<String>();
 		int i = 0;
 
-		for (final File family : getFileSystemUtil().families()) {
+		for (final Family family : getRepository().families()) {
 			final String name = family.getName();
 			if ((i++ % 2) == 0) {
 				leftList.add(name);
@@ -66,49 +73,49 @@ public class BrowseController extends AbstractController {
 	}
 
 	@RequestMapping(value = UrlMappings.PRODUCT, method = RequestMethod.GET)
-	public String browseProductGet(@PathVariable final String family, @PathVariable final String product, final ModelMap model) throws IOException {
-		populateProductGet(family, product, model);
+	public String browseApplicationGet(@PathVariable final String family, @PathVariable final String application, final ModelMap model) throws IOException {
+		populateApplicationGet(family, application, model);
 
 		final List<String> list = new ArrayList<String>();
 
-		final List<File> versions;
-		if (product.equals("all")) {
-			versions = getFileSystemUtil().allVersions(family);
+		final List<Version> versions;
+		if (application.equals("all")) {
+			versions = getRepository().allVersions(family);
 		} else {
-			versions = getFileSystemUtil().versions(family, product);
+			versions = getRepository().versions(family, application);
 		}
 
 		final Map<String, String> statuses = new HashMap<String, String>();
-		for (final File version : versions) {
+		for (final Version version : versions) {
 			final String name = version.getName();
-			if (version.isDirectory() && !list.contains(name)) {
+			if (!list.contains(name)) {
 				list.add(name);
-				statuses.put(name, MetadataHelper.status(version.getPath()));
+				statuses.put(name, version.status());
 			}
 		}
 		model.addAttribute("versions", list);
 		model.addAttribute("status", statuses);
 
-		return "browseProduct";
+		return "browseApplication";
 	}
 
 	@RequestMapping(value = UrlMappings.VERSION, method = RequestMethod.GET)
-	public String browseVersionGet(@PathVariable final String family, @PathVariable final String product, @PathVariable final String version, final ModelMap model) throws IOException {
-		populateVersionGet(family, product, version, model);
+	public String browseVersionGet(@PathVariable final String family, @PathVariable final String application, @PathVariable final String version, final ModelMap model) throws IOException {
+		populateVersionGet(family, application, version, model);
 
 		final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm dd/MM/yy");
 		final List<String[]> list = new ArrayList<String[]>();
 
-		final List<File> resources;
-		if (product.equals("all")) {
-			resources = getFileSystemUtil().allResources(family, version);
+		final List<Resource> resources;
+		if (application.equals("all")) {
+			resources = getRepository().allResources(family, version);
 		} else {
-			resources = getFileSystemUtil().resources(family, product, version);
+			resources = getRepository().resources(family, application, version);
 		}
 
 		long totalLen = 0;
 		final List<String> excluded = MetadataHelper.excludedFiles();
-		for (final File resource : resources) {
+		for (final Resource resource : resources) {
 			if (!excluded.contains(resource.getName()) && resource.isFile()) {
 				final long len = resource.length();
 				final long lastModified = resource.lastModified();
@@ -128,8 +135,7 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
 
 		// Do the jira!
-		final JiraHelper jiraHelper = new JiraHelper(getPathHelper());
-		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, product, version);
+		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, application, version);
 		final Map<String, String> shortLog = new HashMap<String, String>();
 
 		// Take the first 5 off the change log and add to a short log
@@ -147,6 +153,11 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("jiraShortList", shortLog);
 		model.addAttribute("jiraLongList", changeLog);
 
+		final String parentJQL = jiraHelper.getJQLForApplication(family, application);
+		final String childJQL = jiraHelper.getJQLForVersion(family, application, version);
+		model.addAttribute("parentJQL", parentJQL.trim());
+		model.addAttribute("childJQL", childJQL.replace(parentJQL, "").trim());
+
 		return "browseVersion";
 	}
 
@@ -155,13 +166,13 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("family", family);
 	}
 
-	private void populateProductGet(final String family, final String product, final ModelMap model) {
+	private void populateApplicationGet(final String family, final String application, final ModelMap model) {
 		populateFamilyGet(family, model);
-		model.addAttribute("product", product);
+		model.addAttribute("application", application);
 	}
 
-	private void populateVersionGet(final String family, final String product, final String version, final ModelMap model) {
-		populateProductGet(family, product, model);
+	private void populateVersionGet(final String family, final String application, final String version, final ModelMap model) {
+		populateApplicationGet(family, application, model);
 		model.addAttribute("version", version);
 	}
 }

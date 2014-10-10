@@ -45,12 +45,12 @@ public class BrowseControllerIT {
 
 		controller.browseFamilyGet("Family 1", mockModelMap);
 
-		Assert.assertTrue("Expected some products", loadedObjects.containsKey("products"));
+		Assert.assertTrue("Expected some applications", loadedObjects.containsKey("applications"));
 
-		final List<String> products = (List<String>) loadedObjects.get("products");
-		Assert.assertEquals("Expected two elements", 2, products.size());
-		Assert.assertEquals("Expected project3", "project3", products.get(0));
-		Assert.assertEquals("Expected project4", "project4", products.get(1));
+		final List<String> applications = (List<String>) loadedObjects.get("applications");
+		Assert.assertEquals("Expected two elements", 2, applications.size());
+		Assert.assertEquals("Expected project3", "project3", applications.get(0));
+		Assert.assertEquals("Expected project4", "project4", applications.get(1));
 
 	}
 
@@ -62,12 +62,12 @@ public class BrowseControllerIT {
 
 		controller.browseFamilyGet("family2", mockModelMap);
 
-		Assert.assertTrue("Expected some products", loadedObjects.containsKey("products"));
+		Assert.assertTrue("Expected some applications", loadedObjects.containsKey("applications"));
 
-		final List<String> products = (List<String>) loadedObjects.get("products");
-		Assert.assertEquals("Expected two elements", 2, products.size());
-		Assert.assertEquals("Expected project3", "Project 1", products.get(0));
-		Assert.assertEquals("Expected project4", "Project 2", products.get(1));
+		final List<String> applications = (List<String>) loadedObjects.get("applications");
+		Assert.assertEquals("Expected two elements", 2, applications.size());
+		Assert.assertEquals("Expected project3", "Project 1", applications.get(0));
+		Assert.assertEquals("Expected project4", "Project 2", applications.get(1));
 
 	}
 

@@ -3,7 +3,7 @@
       <ol class="breadcrumb">
         <li><a href="${contextPath}/browse"><span class="glyphicon glyphicon-home"></span></a></li>
         <li><a href="${contextPath}/browse/${family}.html">${family}</a></li>
-        <li class="active">${product}</li>
+        <li class="active">${application}</li>
       </ol>
 
       <div class="main-page">
@@ -17,7 +17,7 @@
               <a href="#" type="button" class="ver-select btn btn-xs btn-danger">Alpha</a>
             </p>
             <c:forEach items="${versions}" var="version">
-              <c:set var="verPath" value="${contextPath}/browse/${family}/${product}/${version}.html"/>
+              <c:set var="verPath" value="${contextPath}/browse/${family}/${application}/${version}.html"/>
               <c:choose>
                 <c:when test="${status.get(version) eq 'candidate'}">
                   <a href="${verPath}" class="ver ver-candidate btn btn-info btn-lg btn-block">${version}</a>

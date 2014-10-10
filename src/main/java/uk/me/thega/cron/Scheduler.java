@@ -1,6 +1,5 @@
 package uk.me.thega.cron;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -9,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import uk.me.thega.model.util.PathHelper;
-import uk.me.thega.model.util.RepositoryFileSystem;
+import uk.me.thega.model.repository.Family;
+import uk.me.thega.model.repository.Application;
+import uk.me.thega.model.repository.Repository;
+import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.jira.JiraHelper;
 
 /**
@@ -29,7 +30,10 @@ public class Scheduler {
 	private final long MIN = 1000 * 60;
 
 	@Autowired
-	private PathHelper pathHelper;
+	private Repository repository;
+
+	@Autowired
+	private JiraHelper jiraHelper;
 
 	/**
 	 * Run Jira caching every 15 mins.
@@ -37,16 +41,13 @@ public class Scheduler {
 	@Scheduled(fixedDelay = MIN * 15)
 	public void runJiraCache() {
 		logger.debug("Scheduler: Running Jira Caching task");
-		final JiraHelper jiraHelper = new JiraHelper(pathHelper);
-		final RepositoryFileSystem fileSystem = new RepositoryFileSystem(pathHelper);
 		try {
-			for (final File familyFile : fileSystem.families()) {
-				final String family = familyFile.getName();
-				for (final File productFile : fileSystem.products(family)) {
-					final String product = productFile.getName();
-					for (final File versionFile : fileSystem.versions(family, product)) {
-						final String version = versionFile.getName();
-						jiraHelper.cacheChangeLogForVersion(family, product, version);
+			for (final Family family : repository.families()) {
+				final String familyName = family.getName();
+				for (final Application application : repository.applications(familyName)) {
+					final String applicationName = application.getName();
+					for (final Version version : repository.versions(familyName, applicationName)) {
+						jiraHelper.cacheChangeLogForVersion(familyName, applicationName, version.getName());
 					}
 				}
 			}

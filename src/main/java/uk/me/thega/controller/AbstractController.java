@@ -3,32 +3,52 @@ package uk.me.thega.controller;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
+
+import uk.me.thega.controller.exception.AccessDeniedException;
+import uk.me.thega.model.repository.Repository;
 import uk.me.thega.model.util.PathHelper;
-import uk.me.thega.model.util.RepositoryFileSystem;
 
 public abstract class AbstractController {
+
+	/** The logger. */
+	private final static Logger logger = LoggerFactory.getLogger(AbstractController.class);
 
 	@Autowired
 	private PathHelper pathHelper;
 
 	@Autowired
-	private RepositoryFileSystem fileSystemUtil;
+	private Repository repository;
 
-	private String productName = null;
+	private String applicationName = null;
 
 	private String companyName = null;
 
 	/**
-	 * Get the util for file system interaction.
+	 * Handle permission exception.
 	 * 
-	 * @return the fileSystemUtil
+	 * @param req the request.
+	 * @param exception the exception.
+	 * @return the view.
 	 */
-	protected RepositoryFileSystem getFileSystemUtil() {
-		return fileSystemUtil;
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(reason = "Access Denied", value = HttpStatus.FORBIDDEN)
+	public ModelAndView handleError(final HttpServletRequest req, final AccessDeniedException exception) {
+		logger.debug("Gracefully handling: {}", exception.getMessage());
+		final ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("exception", exception);
+		modelAndView.setViewName("error");
+		return modelAndView;
 	}
 
 	/**
@@ -40,39 +60,46 @@ public abstract class AbstractController {
 		return pathHelper;
 	}
 
+	/**
+	 * Get the repository object.
+	 * 
+	 * @return the respository
+	 */
+	protected Repository getRepository() {
+		return repository;
+	}
+
 	protected void populateGet(final ModelMap model) {
 		initNamesFromConfig();
-		model.addAttribute("productName", productName);
+		model.addAttribute("applicationName", applicationName);
 		model.addAttribute("company", companyName);
 	}
 
 	/**
-	 * Set the model for file system interaction.
+	 * Set the repository.
 	 * 
-	 * @param fileSystemUtil
-	 *            the fileSystemUtil to set
+	 * @param repository the repository to set
 	 */
-	void setFileSystemUtil(final RepositoryFileSystem fileSystemUtil) {
-		this.fileSystemUtil = fileSystemUtil;
+	void setFileSystemUtil(final Repository repository) {
+		this.repository = repository;
 	}
 
 	/**
 	 * Set the path helper
 	 * 
-	 * @param pathHelper
-	 *            the pathHelper to set
+	 * @param pathHelper the pathHelper to set
 	 */
 	void setPathHelper(final PathHelper pathHelper) {
 		this.pathHelper = pathHelper;
 	}
 
 	/**
-	 * If the names of the product are not initialised then fetch them from the config.
+	 * If the names of the application are not initialised then fetch them from the config.
 	 */
 	private void initNamesFromConfig() {
-		if ((productName == null) || (companyName == null)) {
+		if ((applicationName == null) || (companyName == null)) {
 			// Defaults
-			productName = "Product Name";
+			applicationName = "Application Name";
 			companyName = "Company Name";
 
 			try {
@@ -81,7 +108,7 @@ public abstract class AbstractController {
 				final String[] config = configContent.split(",");
 
 				if (config.length == 2) {
-					productName = config[0];
+					applicationName = config[0];
 					companyName = config[1];
 				}
 			} catch (final IOException e) {

@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.me.thega</groupId>
 	<artifactId>release-repo</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<packaging>war</packaging>
 	<name>Release Repository</name>
 	<description>Web Application for publishing a file system repository of Installers via HTTP.</description>
@@ -14,13 +14,28 @@
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<jdk.version>1.6</jdk.version>
 	</properties>
-	
+
 	<developers>
 		<developer>
 			<name>Phillip Whittlesea</name>
 			<organizationUrl>http://github.com/pwhittlesea</organizationUrl>
 		</developer>
 	</developers>
+
+	<repositories>
+		<repository>
+			<id>atlassian-public</id>
+			<url>https://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -32,8 +47,19 @@
 		<!-- Jira -->
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-rest-java-client</artifactId>
-			<version>2.0.0-m2</version>
+			<artifactId>jira-rest-java-client-api</artifactId>
+			<version>2.0.0-m31</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-mapper-asl</artifactId>
+					<groupId>org.codehaus.jackson</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-rest-java-client-core</artifactId>
+			<version>2.0.0-m31</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-mapper-asl</artifactId>
@@ -109,7 +135,6 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
-
 
 	</dependencies>
 
