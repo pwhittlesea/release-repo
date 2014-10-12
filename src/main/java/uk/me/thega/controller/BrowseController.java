@@ -135,7 +135,7 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
 
 		// Do the jira!
-		final Map<String, String> changeLog = jiraHelper.getCachedChangeLogForVersion(family, application, version);
+		final Map<String, String> changeLog = jiraHelper.getChangeLog(family, application, version);
 		final Map<String, String> shortLog = new HashMap<String, String>();
 
 		// Take the first 5 off the change log and add to a short log
@@ -153,8 +153,8 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("jiraShortList", shortLog);
 		model.addAttribute("jiraLongList", changeLog);
 
-		final String parentJQL = jiraHelper.getJQLForApplication(family, application);
-		final String childJQL = jiraHelper.getJQLForVersion(family, application, version);
+		final String parentJQL = jiraHelper.getJql(family, application);
+		final String childJQL = jiraHelper.getJql(family, application, version);
 		model.addAttribute("parentJQL", parentJQL.trim());
 		model.addAttribute("childJQL", childJQL.replace(parentJQL, "").trim());
 

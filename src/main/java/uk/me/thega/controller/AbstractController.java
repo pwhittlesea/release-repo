@@ -1,11 +1,10 @@
 package uk.me.thega.controller;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.me.thega.controller.exception.AccessDeniedException;
+import uk.me.thega.model.properties.PropertiesLoader;
 import uk.me.thega.model.repository.Repository;
 import uk.me.thega.model.util.PathHelper;
 
@@ -98,21 +98,15 @@ public abstract class AbstractController {
 	 */
 	private void initNamesFromConfig() {
 		if ((applicationName == null) || (companyName == null)) {
-			// Defaults
-			applicationName = "Application Name";
-			companyName = "Company Name";
-
 			try {
-				final String configPath = pathHelper.getRepositoryPath() + File.separator + ".config";
-				final String configContent = FileUtils.readFileToString(new File(configPath));
-				final String[] config = configContent.split(",");
-
-				if (config.length == 2) {
-					applicationName = config[0];
-					companyName = config[1];
-				}
+				final PropertiesLoader loader = new PropertiesLoader(pathHelper);
+				final Map<String, String> properties = loader.read(".config");
+				applicationName = properties.get("applicationName");
+				companyName = properties.get("companyName");
 			} catch (final IOException e) {
 				// roll back to defaults
+				applicationName = "n/a";
+				companyName = "n/a";
 			}
 		}
 	}

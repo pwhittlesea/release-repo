@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import uk.me.thega.model.repository.Family;
 import uk.me.thega.model.repository.Application;
+import uk.me.thega.model.repository.Family;
 import uk.me.thega.model.repository.Repository;
 import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.jira.JiraHelper;
@@ -40,19 +40,21 @@ public class Scheduler {
 	 */
 	@Scheduled(fixedDelay = MIN * 15)
 	public void runJiraCache() {
-		logger.debug("Scheduler: Running Jira Caching task");
-		try {
-			for (final Family family : repository.families()) {
-				final String familyName = family.getName();
-				for (final Application application : repository.applications(familyName)) {
-					final String applicationName = application.getName();
-					for (final Version version : repository.versions(familyName, applicationName)) {
-						jiraHelper.cacheChangeLogForVersion(familyName, applicationName, version.getName());
+		if (jiraHelper.isEnabled()) {
+			logger.debug("Scheduler: Running Jira Caching task");
+			try {
+				for (final Family family : repository.families()) {
+					final String familyName = family.getName();
+					for (final Application application : repository.applications(familyName)) {
+						final String applicationName = application.getName();
+						for (final Version version : repository.versions(familyName, applicationName)) {
+							jiraHelper.cacheChangeLog(familyName, applicationName, version.getName());
+						}
 					}
 				}
+			} catch (final IOException e) {
+				logger.error("Scheduler: Could not finish Jira Cache", e);
 			}
-		} catch (final IOException e) {
-			logger.error("Scheduler: Could not finish Jira Cache", e);
 		}
 	}
 }
