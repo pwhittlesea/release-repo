@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import uk.me.thega.model.repository.Family;
 import uk.me.thega.model.repository.Application;
+import uk.me.thega.model.repository.Family;
 import uk.me.thega.model.repository.Resource;
 import uk.me.thega.model.repository.Version;
 import uk.me.thega.model.util.MetadataHelper;
@@ -32,6 +32,33 @@ public class BrowseController extends AbstractController {
 
 	@Autowired
 	private JiraHelper jiraHelper;
+
+	@RequestMapping(value = UrlMappings.PRODUCT, method = RequestMethod.GET)
+	public String browseApplicationGet(@PathVariable final String family, @PathVariable final String application, final ModelMap model) throws IOException {
+		populateApplicationGet(family, application, model);
+
+		final List<String> list = new ArrayList<String>();
+
+		final List<Version> versions;
+		if (application.equals("all")) {
+			versions = getRepository().allVersions(family);
+		} else {
+			versions = getRepository().versions(family, application);
+		}
+
+		final Map<String, String> statuses = new HashMap<String, String>();
+		for (final Version version : versions) {
+			final String name = version.getName();
+			if (!list.contains(name)) {
+				list.add(name);
+				statuses.put(name, version.status());
+			}
+		}
+		model.addAttribute("versions", list);
+		model.addAttribute("status", statuses);
+
+		return "browseApplication";
+	}
 
 	@RequestMapping(value = UrlMappings.FAMILY, method = RequestMethod.GET)
 	public String browseFamilyGet(@PathVariable final String family, final ModelMap model) throws IOException, JAXBException {
@@ -70,33 +97,6 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("rightList", rightList);
 
 		return "browse";
-	}
-
-	@RequestMapping(value = UrlMappings.PRODUCT, method = RequestMethod.GET)
-	public String browseApplicationGet(@PathVariable final String family, @PathVariable final String application, final ModelMap model) throws IOException {
-		populateApplicationGet(family, application, model);
-
-		final List<String> list = new ArrayList<String>();
-
-		final List<Version> versions;
-		if (application.equals("all")) {
-			versions = getRepository().allVersions(family);
-		} else {
-			versions = getRepository().versions(family, application);
-		}
-
-		final Map<String, String> statuses = new HashMap<String, String>();
-		for (final Version version : versions) {
-			final String name = version.getName();
-			if (!list.contains(name)) {
-				list.add(name);
-				statuses.put(name, version.status());
-			}
-		}
-		model.addAttribute("versions", list);
-		model.addAttribute("status", statuses);
-
-		return "browseApplication";
 	}
 
 	@RequestMapping(value = UrlMappings.VERSION, method = RequestMethod.GET)
@@ -161,14 +161,14 @@ public class BrowseController extends AbstractController {
 		return "browseVersion";
 	}
 
-	private void populateFamilyGet(final String family, final ModelMap model) {
-		populateGet(model);
-		model.addAttribute("family", family);
-	}
-
 	private void populateApplicationGet(final String family, final String application, final ModelMap model) {
 		populateFamilyGet(family, model);
 		model.addAttribute("application", application);
+	}
+
+	private void populateFamilyGet(final String family, final ModelMap model) {
+		populateGet(model);
+		model.addAttribute("family", family);
 	}
 
 	private void populateVersionGet(final String family, final String application, final String version, final ModelMap model) {
