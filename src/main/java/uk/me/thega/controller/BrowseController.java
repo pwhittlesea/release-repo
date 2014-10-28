@@ -30,6 +30,41 @@ import uk.me.thega.model.util.jira.JiraHelper;
 @RequestMapping(UrlMappings.ROOT_BROWSE)
 public class BrowseController extends AbstractController {
 
+	/**
+	 * Get the jira change log for a version.
+	 *
+	 * @param jiraHelper the helper to get the data from.
+	 * @param family the family.
+	 * @param application the application.
+	 * @param version the version.
+	 * @param model the model to add the changelog to.
+	 * @throws IOException if getting jira config fails.
+	 */
+	static void getJiraDetailsForVersion(final JiraHelper jiraHelper, final String family, final String application, final String version, final ModelMap model) throws IOException {
+		final Map<String, String> changeLog = jiraHelper.getChangeLog(family, application, version);
+		final Map<String, String> shortLog = new HashMap<String, String>();
+
+		// Take the first 5 off the change log and add to a short log
+		final List<String> tempList = new ArrayList<String>(changeLog.keySet());
+		Collections.sort(tempList);
+		for (int i = 0; i < 5; i++) {
+			if (i < tempList.size()) {
+				final String key = tempList.get(i);
+				shortLog.put(key, changeLog.get(key));
+				changeLog.remove(key);
+			}
+		}
+
+		model.addAttribute("jiraBaseUrl", jiraHelper.getJiraUrl());
+		model.addAttribute("jiraShortList", shortLog);
+		model.addAttribute("jiraLongList", changeLog);
+
+		final String parentJQL = jiraHelper.getJql(family, application);
+		final String childJQL = jiraHelper.getJql(family, application, version);
+		model.addAttribute("parentJQL", parentJQL.trim());
+		model.addAttribute("childJQL", childJQL.replace(parentJQL, "").trim());
+	}
+
 	@Autowired
 	private JiraHelper jiraHelper;
 
@@ -134,29 +169,7 @@ public class BrowseController extends AbstractController {
 		model.addAttribute("resources", list);
 		model.addAttribute("totalSize", SizeCalculator.getStringSizeLengthFile(totalLen));
 
-		// Do the jira!
-		final Map<String, String> changeLog = jiraHelper.getChangeLog(family, application, version);
-		final Map<String, String> shortLog = new HashMap<String, String>();
-
-		// Take the first 5 off the change log and add to a short log
-		final List<String> tempList = new ArrayList<String>(changeLog.keySet());
-		Collections.sort(tempList);
-		for (int i = 1; i <= 5; i++) {
-			if (i <= tempList.size()) {
-				final String key = tempList.get(i);
-				shortLog.put(key, changeLog.get(key));
-				changeLog.remove(key);
-			}
-		}
-
-		model.addAttribute("jiraBaseUrl", jiraHelper.getJiraUrl());
-		model.addAttribute("jiraShortList", shortLog);
-		model.addAttribute("jiraLongList", changeLog);
-
-		final String parentJQL = jiraHelper.getJql(family, application);
-		final String childJQL = jiraHelper.getJql(family, application, version);
-		model.addAttribute("parentJQL", parentJQL.trim());
-		model.addAttribute("childJQL", childJQL.replace(parentJQL, "").trim());
+		getJiraDetailsForVersion(jiraHelper, family, application, version, model);
 
 		return "browseVersion";
 	}
