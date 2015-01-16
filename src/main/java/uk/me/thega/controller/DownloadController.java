@@ -31,9 +31,11 @@ public class DownloadController extends AbstractController {
 			download = getRepository().getResource(family, application, version, fileName + '.' + extension);
 		}
 		final InputStream is = download.getInputStream();
+		response.setContentType(download.getMimeType());
+		response.setContentLength(is.available());
+
 		IOUtils.copy(is, response.getOutputStream());
 		response.flushBuffer();
-		response.setContentType(download.getMimeType());
 	}
 
 	@RequestMapping(value = UrlMappings.VERSION_DOWNLOAD, method = RequestMethod.GET)
@@ -45,6 +47,8 @@ public class DownloadController extends AbstractController {
 			download = getRepository().resources(family, application, version);
 		}
 
+		response.setContentType("application/zip");
+		
 		final ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 
 		final List<String> excluded = MetadataHelper.excludedFiles();
@@ -63,7 +67,6 @@ public class DownloadController extends AbstractController {
 		zos.flush();
 		zos.close();
 		response.flushBuffer();
-		response.setContentType("application/zip");
 	}
 
 }
