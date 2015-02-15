@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(UrlMappings.ROOT_INDEX)
 public class IndexController extends AbstractController {
 
-	@RequestMapping(method = RequestMethod.GET)
-	public String indexGet(final ModelMap model) {
-		populateGet(model);
-		return "index";
-	}
+    @RequestMapping(method = RequestMethod.GET)
+    public String indexGet(final ModelMap model) {
+        populateGet(model);
+        return "index";
+    }
 
 }
