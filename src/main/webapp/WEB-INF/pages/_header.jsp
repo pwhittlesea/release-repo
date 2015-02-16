@@ -10,6 +10,8 @@
     <meta name="author" content="Phillip Whittlesea">
 
     <link rel="stylesheet" href="${contextPath}/css/index.css">
+    <link href="${contextPath}/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -38,6 +40,7 @@
           <ul class="nav navbar-nav">
             <li><a href="${contextPath}/">Home</a></li>
             <li><a href="${contextPath}/browse">Browse</a></li>
+            <li><a href="${contextPath}/upload">Upload</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="http://github.com/pwhittlesea"><small>Made by <strong>@pwhittlesea</strong></small></a></li>

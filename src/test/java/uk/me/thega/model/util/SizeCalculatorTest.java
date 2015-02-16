@@ -4,18 +4,42 @@ import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Unit tests for the {@link SizeCalculator}.
+ *
+ * @author pwhittlesea
+ *
+ */
 public class SizeCalculatorTest {
 
 	@Test
-	public void testDataConversion() {
+	public void testDataConversionByte() {
+		assertEquals("1.0 B", runCalc(1));
+	}
+
+	@Test
+	public void testDataConversionGByte() {
+		assertEquals("1.0 GB", runCalc(1 * 1000 * 1000 * 1000));
+	}
+
+	@Test
+	public void testDataConversionKByte() {
+		assertEquals("1.0 KB", runCalc(1 * 1000));
+	}
+
+	@Test
+	public void testDataConversionMByte() {
+		assertEquals("1.0 MB", runCalc(1 * 1000 * 1000));
+	}
+
+	@Test
+	public void testDataConversionTByte() {
+		assertEquals("2.0 TB", runCalc(2L * 1000 * 1000 * 1000 * 1000));
+	}
+
+	@Test
+	public void testDataConversionZero() {
 		assertEquals("-", runCalc(0));
-		assertEquals("1 byte", runCalc(1));
-		assertEquals("10.00 bytes", runCalc(10));
-		assertEquals("1.00 Kb", runCalc(SizeCalculator.sizeKb));
-		assertEquals("1.00 KB", runCalc(SizeCalculator.sizeKB));
-		assertEquals("1.00 MB", runCalc(SizeCalculator.sizeMB));
-		assertEquals("1.00 GB", runCalc(SizeCalculator.sizeGB));
-		assertEquals(">1 TB", runCalc(SizeCalculator.sizeTB));
 	}
 
 	private String runCalc(final float a) {
