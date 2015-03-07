@@ -1,6 +1,5 @@
 <%@ include file="_header.jsp" %>
     <div class="container">
-
       <div class="main-page">
         <div class="row">
           <div class="col-md-8 col-md-offset-2">
@@ -23,6 +22,22 @@
                     <div class="form-group hidden">
                       <label for="version">Version</label>
                       <select id="version" class="form-control"></select>
+                    </div>
+                    <div id="newVersionNumberGroup" class="form-group hidden">
+                      <label for="newVersionNumber">OR new version</label>
+                      <div class="row-fluid">
+                        <div style="padding-left: 0px" class="col-md-8">
+                          <div class="input-group">
+                            <div class="input-group-addon">v</div>
+                            <input type="text" class="form-control" id="newVersionNumber" placeholder="0.0.0-SNAPSHOT">
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="input-group">
+                            <button id="newVersionButton" type="button" class="btn btn-primary">Submit</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div id="artifactGroup" class="form-group hidden">
                       <label for="artifact">File input</label>
@@ -92,6 +107,19 @@
 
       // End Version
 
+      // Start New Version
+
+      function initNewVersions(family, application) {
+        $("#newVersionNumberGroup").removeClass("hidden");
+      }
+
+      function resetNewVersions() {
+        $('#newVersionNumberGroup').addClass("hidden");
+        $('#newVersionNumber').val("");
+      }
+
+      // End New Version
+
       // Start Artifacts
 
       function initArtifacts(family, application, version) {
@@ -111,6 +139,7 @@
 
         $("#family").change(function() {
           resetVersions();
+          resetNewVersions();
           resetArtifacts();
           if ($('#family :selected').val() > -1) {
             var family = $('#family :selected').text();
@@ -126,13 +155,16 @@
             var family = $('#family :selected').text();
             var application = $('#application :selected').text();
             initVersions(family, application);
+            initNewVersions(family, application);
           } else {
             resetVersions();
+            resetNewVersions();
           }
         });
 
         $("#version").change(function() {
           if ($('#version :selected').val() > -1) {
+            resetNewVersions();
             var family = $('#family :selected').text();
             var application = $('#application :selected').text();
             var version = $('#version :selected').text();
@@ -140,6 +172,14 @@
           } else {
             resetArtifacts();
           }
+        });
+
+        $("#newVersionButton").click(function() {
+          var family = $('#family :selected').text();
+          var application = $('#application :selected').text();
+          var version = $('#newVersionNumber').val();
+          initVersions(family, application);
+          initArtifacts(family, application, version);
         });
       });
     </script>
