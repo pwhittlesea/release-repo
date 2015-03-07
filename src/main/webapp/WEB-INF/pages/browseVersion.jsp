@@ -75,8 +75,9 @@
                 <table id="bs-table" class="table table-hover">
                   <thead>
                     <tr>
-                      <th class="col-lg-8 text-left">Name</th>
-                      <th class="col-lg-2 text-right">Size</th>
+                      <th class="col-lg-7 text-left">Name</th>
+                      <th class="col-lg-2 text-right">MD5</th>
+                      <th class="col-lg-1 text-right">Size</th>
                       <th class="col-lg-2 text-right">Modified</th>
                     </tr>
                   </thead>
@@ -87,6 +88,7 @@
                           <span class="glyphicon glyphicon-file"></span>
                           <a href="${contextPath}/download/${family}/${application}/${version}/${resource[0]}">${resource[0]}</a>
                         </td>
+                        <td class="text-right">${resource[3]}</td>
                         <td class="text-right">${resource[1]}</td>
                         <td class="text-right">${resource[2]}</td>
                       </tr>
