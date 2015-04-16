@@ -1,5 +1,6 @@
 package uk.me.thega.controller;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,6 +16,7 @@ import uk.me.thega.model.util.SizeCalculator;
 import uk.me.thega.model.util.jira.JiraHelper;
 
 import javax.xml.bind.JAXBException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,7 +160,16 @@ public class BrowseController extends AbstractController {
                 final String lastModifiedSt = dateFormatter.format(new Date(lastModified));
                 final String name = resource.getName();
 
-                final String[] resourceSpec = { name, lenSt, lastModifiedSt };
+                String md5Sum;
+                try {
+                    final FileInputStream inputStream = resource.getInputStream();
+                    md5Sum = DigestUtils.md5Hex(inputStream);
+                    inputStream.close();
+                } catch (final Exception e) {
+                    md5Sum = "";
+                }
+
+                final String[] resourceSpec = { name, lenSt, lastModifiedSt, md5Sum };
                 list.add(resourceSpec);
 
                 // Sums
