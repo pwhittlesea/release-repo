@@ -160,6 +160,20 @@
 					<target>${jdk.version}</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>external.atlassian.jgitflow</groupId>
+				<artifactId>jgitflow-maven-plugin</artifactId>
+				<version>1.0-m4.3</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<noReleaseBuild>true</noReleaseBuild>
+					<localOnly>true</localOnly>
+					<alwaysUpdateOrigin>false</alwaysUpdateOrigin>
+					<flowInitContext>
+						<versionTagPrefix>v</versionTagPrefix>
+					</flowInitContext>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
